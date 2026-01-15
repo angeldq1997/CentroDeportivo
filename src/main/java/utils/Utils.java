@@ -62,8 +62,8 @@ public class Utils {
     public static int countArrayFilled(Object[] objects){
         int total = 0;
         if(objects != null){
-            for (int i = 0; i < objects.length; i++) {
-                if(objects[i] != null){
+            for (Object object : objects) {
+                if (object != null) {
                     total++;
                 }
             }
@@ -72,4 +72,6 @@ public class Utils {
         }
         return total;
     }
+
+
 }

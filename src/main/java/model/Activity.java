@@ -19,11 +19,12 @@ public class Activity {
     }
 
     public Activity (){
-        this.activityId = nextActivityId++;
+        this.activityId = -1;
         this.name = "Actividad sin título";
         this.minuteDuration = 0;
         this.level = "Sin asignar";
         this.membersInscribed = new Member[0];
+        nextActivityId++;
     }
 
     public int getActivityId() {
@@ -65,6 +66,8 @@ public class Activity {
     public void setMembersInscribed(Member[] membersInscribed) {
         this.membersInscribed = membersInscribed;
     }
+
+    public boolean checkMembers
 
     @Override
     public String toString() {

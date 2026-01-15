@@ -17,12 +17,6 @@ public class MemberController {
         return memberToFind;
     }
 
-    public boolean inscribeMemberOnActivity (int memberId, int activityId){
-        boolean inscribedCorrectly = false;
-
-        return inscribedCorrectly;
-    }
-
     public boolean unsubscribeMemberOnActivity (int memberId, int activityId){
         boolean unsubcribedSuccessfully = false;
 

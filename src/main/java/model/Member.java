@@ -22,8 +22,8 @@ public class Member {
     }
 
     public Member() {
-        this.memberId = nextMember++;
-        this.dni = "00000000A";
+        this.memberId = -1;
+        this.dni = "12345678A";
         this.age = 0;
         this.activitiesInscribed = new Activity[10];
         this.monthlyFees = new double[12];
@@ -77,6 +77,68 @@ public class Member {
     public void setMonthlyFees(double[] monthlyFees) {
         this.monthlyFees = monthlyFees;
     }
+
+    public boolean verifyDni(String dni){
+        boolean validDni = false;
+        if ((dni != null || dni != "") && dni.matches("[0-9]{8}[A-Z a-z]")){
+            validDni = true;
+        }
+        return validDni;
+    }
+
+    public boolean inscribeMemberOnActivity (int memberId, int activityId){
+        boolean inscribedCorrectly = false;
+        if(memberId > -1  || activityId > -1){
+            if (findExactActivityPosition() != -1){
+
+            }
+        }
+        return inscribedCorrectly;
+    }
+
+    public int findExactActivityPosition(){
+        int foundActivity = -1;
+        for (int i = 0; i < this.activitiesInscribed.length; i++) {
+            if(this.activitiesInscribed[i] == null || this.activitiesInscribed[i].getActivityId() == -1 ){
+                foundActivity = i;
+            }
+        }
+        return foundActivity;
+    }
+
+    public int findExactActivityPosition(int activityId){
+        int foundActivity = -1;
+        for (int i = 0; i < this.activitiesInscribed.length; i++) {
+            if((this.activitiesInscribed[i] == null || this.activitiesInscribed[i].getActivityId() == -1) && this.activitiesInscribed[i].getActivityId() == activityId){
+                foundActivity = i;
+            }
+        }
+        return foundActivity;
+    }
+
+    public Activity findActivity(int activityIdToFind){
+        Activity foundActivity = null;
+        if( activityIdToFind > -1){
+            for (int i = 0; i < activitiesInscribed.length; i++) {
+                if(activitiesInscribed[i].getActivityId() != -1 && activitiesInscribed[i].getActivityId() == activityIdToFind){
+                    foundActivity = activitiesInscribed[i];
+                }
+            }
+        }
+        return foundActivity;
+    }
+
+    public boolean unsubscribeActivity(int activityId){
+        boolean unsubscribedSuccessful = false;
+        if( activityId > -1){
+            if(this.findActivity(activityId) != null){
+                this.activitiesInscribed[this.findExactActivityPosition(activityId)] = null;
+                unsubscribedSuccessful = true;
+            }
+        }
+        return unsubscribedSuccessful;
+    }
+
 
     @Override
     public String toString() {
