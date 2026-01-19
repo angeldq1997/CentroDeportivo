@@ -72,6 +72,4 @@ public class Utils {
         }
         return total;
     }
-
-
 }

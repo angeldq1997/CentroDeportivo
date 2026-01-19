@@ -1,5 +1,7 @@
 package model;
 
+import utils.Utils;
+
 import java.util.Arrays;
 
 public class Member {
@@ -11,7 +13,7 @@ public class Member {
     private boolean[] payedFees;
     private static int nextMember;
 
-    //Constructor registrar miembros nuevos
+    //Constructor registrar socios nuevos
     public Member(String dni, int age, Activity[] activitiesInscribed, double[] monthlyFees, boolean[] payedFees) {
         this.memberId = nextMember++;
         this.dni = dni;
@@ -19,6 +21,15 @@ public class Member {
         this.activitiesInscribed = activitiesInscribed;
         this.monthlyFees = monthlyFees;
         this.payedFees = payedFees;
+    }
+
+    public Member(String dni, int age) {
+        this.memberId = nextMember++;
+        this.dni = dni;
+        this.age = age;
+        this.activitiesInscribed = new Activity[10];
+        this.monthlyFees = new double[12];
+        this.payedFees = new boolean[12];
     }
 
     public Member() {
@@ -55,11 +66,15 @@ public class Member {
     }
 
     public Activity[] getActivitiesInscribed() {
-        return activitiesInscribed;
-    }
-
-    public void setActivitiesInscribed(Activity[] activitiesInscribed) {
-        this.activitiesInscribed = activitiesInscribed;
+        Activity[] onlyNotNullActivities = new Activity[Utils.countArrayFilled(this.activitiesInscribed)];
+        int counter = 0;
+        for (int i = 0; i < this.activitiesInscribed.length; i++) {
+            if(this.activitiesInscribed[i] != null){
+                onlyNotNullActivities[counter] = activitiesInscribed[i];
+                counter++;
+            }
+        }
+        return onlyNotNullActivities;
     }
 
     public boolean[] getPayedFees() {
@@ -128,22 +143,93 @@ public class Member {
         return foundActivity;
     }
 
-    public boolean unsubscribeActivity(int activityId){
+    public boolean unsubscribeActivity(int activityId) throws Exception {
         boolean unsubscribedSuccessful = false;
         if( activityId > -1){
             if(this.findActivity(activityId) != null){
                 this.activitiesInscribed[this.findExactActivityPosition(activityId)] = null;
                 unsubscribedSuccessful = true;
             }
+        }else{
+            throw new Exception("Error, la id de Actividad introducida es inválida, debe ser mayor de -1.");
         }
         return unsubscribedSuccessful;
     }
 
+    public boolean recalculateMonthlyFeesCurrentMonth(int actualMonth){
+        boolean recalculateSuccessful = false;
+        for (int i = actualMonth; i < this.monthlyFees.length; i++) {
+            double totalMonth = 0.0;
+            for (int j = 0; j < this.activitiesInscribed.length; j++) {
+                totalMonth += this.activitiesInscribed[i].getMonthlyPrice();
+            }
+            this.monthlyFees[i] = totalMonth;
+        }
+        return recalculateSuccessful;
+    }
+
+    public boolean recalculateMonthlyFees(int actualMonth){
+        boolean recalculateSuccessful = false;
+        for (int i = actualMonth; i < this.monthlyFees.length; i++) {
+            double totalMonth = 0.0;
+            for (int j = 0; j < this.activitiesInscribed.length; j++) {
+                totalMonth += this.activitiesInscribed[i].getMonthlyPrice();
+            }
+            this.monthlyFees[i] = totalMonth;
+        }
+        return recalculateSuccessful;
+    }
+
+    public double yearlyFee (){
+        double total = 0.0;
+        for (int i = 0; i < this.monthlyFees.length; i++) {
+            total += this.monthlyFees[i];
+        }
+        return total;
+    }
+
+    public double feeOfExactMonth (int monthToSearch) throws Exception {
+        double exactFee = 0.0;
+        //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = Enero,
+        // reducimos ese número una vez para que corresponda con el array.
+        monthToSearch--;
+        if (monthToSearch < 1 || monthToSearch > 12){
+            throw new Exception("Error, mes introducido inválido.");
+        } else{
+            exactFee = this.monthlyFees[monthToSearch];
+        }
+        return exactFee;
+    }
+
+    public double yearLeftFee (int monthToSearch){
+        monthToSearch--;
+        double yearLeftTotal = 0.0;
+        for (int i = monthToSearch; i < this.monthlyFees.length; i++) {
+            yearLeftTotal += this.monthlyFees[i];
+        }
+        return yearLeftTotal;
+    }
+
+    public boolean markPayedMonth(int monthToCheck, boolean statusPayment){
+        boolean modifiedMonthFeeSuccessful = false;
+        monthToCheck--;
+        this.payedFees[monthToCheck] = statusPayment;
+        return modifiedMonthFeeSuccessful;
+    }
+
+    public String showOnlyInscribedActivities(){
+        String onlyInscribedActivities = "";
+        for (int i = 0; i < this.activitiesInscribed.length; i++) {
+            if (this.activitiesInscribed[i] != null){
+                onlyInscribedActivities += this.activitiesInscribed[i].getName() + " " + this.activitiesInscribed[i].getMonthlyPrice() + "\n";
+            }
+        }
+        return onlyInscribedActivities;
+    }
 
     @Override
     public String toString() {
-        return "DATOS DEL SOCIO " +
-                "\nID socio = " + memberId +
+        return "\nID socio = " + memberId +
                 "\nDNI = " + dni +
                 "\nEdad = " + age +
                 "\nActividades inscritas = " + Arrays.toString(activitiesInscribed) +
