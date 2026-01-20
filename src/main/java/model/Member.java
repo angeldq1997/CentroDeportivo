@@ -93,14 +93,6 @@ public class Member {
         this.monthlyFees = monthlyFees;
     }
 
-    public boolean verifyDni(String dni){
-        boolean validDni = false;
-        if ((dni != null || dni != "") && dni.matches("[0-9]{8}[A-Z a-z]")){
-            validDni = true;
-        }
-        return validDni;
-    }
-
     public boolean inscribeMemberOnActivity (int memberId, int activityId){
         boolean inscribedCorrectly = false;
         if(memberId > -1  || activityId > -1){
@@ -156,28 +148,22 @@ public class Member {
         return unsubscribedSuccessful;
     }
 
-    public boolean recalculateMonthlyFeesCurrentMonth(int actualMonth){
-        boolean recalculateSuccessful = false;
+    public void recalculateMonthlyFees(int actualMonth){
+        double totalMonth = 0.0;
         for (int i = actualMonth; i < this.monthlyFees.length; i++) {
-            double totalMonth = 0.0;
             for (int j = 0; j < this.activitiesInscribed.length; j++) {
-                totalMonth += this.activitiesInscribed[i].getMonthlyPrice();
+                totalMonth += this.activitiesInscribed[j].getMonthlyPrice();
             }
             this.monthlyFees[i] = totalMonth;
         }
-        return recalculateSuccessful;
     }
 
-    public boolean recalculateMonthlyFees(int actualMonth){
-        boolean recalculateSuccessful = false;
-        for (int i = actualMonth; i < this.monthlyFees.length; i++) {
-            double totalMonth = 0.0;
-            for (int j = 0; j < this.activitiesInscribed.length; j++) {
-                totalMonth += this.activitiesInscribed[i].getMonthlyPrice();
-            }
-            this.monthlyFees[i] = totalMonth;
+    public double actualFee () {
+        double actualFee = 0.0;
+        for (int i = 0; i < this.activitiesInscribed.length; i++) {
+            actualFee += this.activitiesInscribed[i].getMonthlyPrice();
         }
-        return recalculateSuccessful;
+        return actualFee;
     }
 
     public double yearlyFee (){
@@ -190,11 +176,11 @@ public class Member {
 
     public double feeOfExactMonth (int monthToSearch) throws Exception {
         double exactFee = 0.0;
-        //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = Enero,
+        //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = enero,
         // reducimos ese número una vez para que corresponda con el array.
         monthToSearch--;
         if (monthToSearch < 1 || monthToSearch > 12){
-            throw new Exception("Error, mes introducido inválido.");
+            throw new Exception("Error, mes introducido inválido, debe introducir un número entre 1 y 12.");
         } else{
             exactFee = this.monthlyFees[monthToSearch];
         }
@@ -210,11 +196,9 @@ public class Member {
         return yearLeftTotal;
     }
 
-    public boolean markPayedMonth(int monthToCheck, boolean statusPayment){
-        boolean modifiedMonthFeeSuccessful = false;
+    public void modifyPayedMonth(int monthToCheck, boolean statusPayment){
         monthToCheck--;
         this.payedFees[monthToCheck] = statusPayment;
-        return modifiedMonthFeeSuccessful;
     }
 
     public String showOnlyInscribedActivities(){
