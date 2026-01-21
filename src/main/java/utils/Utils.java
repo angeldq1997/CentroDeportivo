@@ -21,9 +21,9 @@ public class Utils {
         return total;
     }
 
-    public boolean verifyDni(String dni){
+    public static boolean verifyDni(String dni){
         boolean validDni = false;
-        if ((dni != null || dni != "") && dni.matches("[0-9]{8}[A-Z a-z]")){
+        if ((dni != null || dni.length() == 0) && dni.matches("[0-9]{8}[A-Z a-z]")){
             validDni = true;
         }
         return validDni;

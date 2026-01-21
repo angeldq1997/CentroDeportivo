@@ -1,14 +1,18 @@
 package view;
 
+import controller.ActivityController;
+import controller.MemberController;
+import model.SportCenter;
+import utils.Utils;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ViewConsole {
-
-    public void showPrincipalMenu (){
+    public static void showPrincipalMenu (SportCenter sportCenter, int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) {
         boolean stayOnMenu = true;
         do{
-            System.out.println("----MENU----\n\t0. Salir.\n\t1. Gestionar socios.\n\t2. Gestionar actividades.\n\t3. Inscripciones.\n\t4.Cuotas.");
+            System.out.println("----MENU CENTRO DEPORTIVO "+ sportCenter.getName() + "----\n\t0. Salir.\n\t1. Gestionar socios.\n\t2. Gestionar actividades.\n\t3. Inscripciones.\n\t4. Cuotas.");
             int option = readIntInRange(0, 4, "Introduce opción: ", "Error, no ha introducido un número entre 0 y 4.");
             switch (option){
                 case 0:
@@ -16,17 +20,65 @@ public class ViewConsole {
                     System.out.println("Ha seleccionado salir del programa, gracias por su tiempo.");
                     break;
                 case 1:
-                    
+                    try {
+                        memberMenu(sportCenter);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
+                case 2:
+                    try {
+                        activityMenu(sportCenter);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 3:
+                    try {
+                        inscriptionsMenu(sportCenter, SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 4:
+                    try {
+                        feeMenu(sportCenter);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                default:
+                    System.out.println("Debe introducir un número entre 0 y 4.");
+            }
+        }while(stayOnMenu);
+    }
+
+    public static void memberMenu (SportCenter sportCenter) throws Exception {
+        boolean stayOnMenu  = true;
+        do{
+            System.out.println("----MENÚ SOCIOS----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de socios.\n\t2. Información de socio.");
+            int option = readIntInRange(0, 2, "Introduce opción: ", "Error, no ha introducido un número entre 0 y 2.");
+            switch (option){
+                case 0:
+                    stayOnMenu = false;
+                    System.out.println("Ha seleccionado salir del menú de socios al menú principal.");
+                    break;
+                case 1:
+                    System.out.println(MemberController.listMembers(sportCenter));
+                    break;
+                case 2:
+                    System.out.println(MemberController.searchMemberById(sportCenter));
+                    break;
+                case 3:
 
             }
         }while(stayOnMenu);
     }
 
-    public void memberMenu (){
+    public static void activityMenu(SportCenter sportCenter) throws Exception {
         boolean stayOnMenu  = true;
         do{
-            System.out.println("----MENÚ SOCIOS----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de socios.\n\t2. Información de socio.\n\t3. PENDIENTE.\n\t4.PENDIENTE.");
+            System.out.println("----MENÚ ACTIVIDADES----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de actividades.\n\t2. Mostrar socios de una actividad.\n\t3. Mostrar detalles de actividad concreta.\n\t4. Dar de baja una actividad.");
             int option = readIntInRange(0, 4, "Introduce opción: ", "Error, no ha introducido un número entre 0 y 4.");
             switch (option){
                 case 0:
@@ -34,25 +86,81 @@ public class ViewConsole {
                     System.out.println("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
-
+                    ActivityController.listActivities(sportCenter);
+                    break;
+                case 2:
+                    ActivityController.listMembersOfActivity(sportCenter);
+                    break;
+                case 3:
+                    ActivityController.searchActivityById(sportCenter);
+                    break;
+                case 4:
+                    ActivityController.removeActivity(sportCenter);
                     break;
             }
         }while(stayOnMenu);
     }
 
-    public void activityMenu (){
+    public static void inscriptionsMenu(SportCenter sportCenter, int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) throws Exception {
         boolean stayOnMenu  = true;
         do{
-            System.out.println("----MENÚ ACTIVIDADES----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de actividades.\n\t2. Mostrar socios de una actividad.\n\t3. PENDIENTE.\n\t4.PENDIENTE.");
+            System.out.println("----MENÚ INSCRIPCIONES----\n\t0. Salir al menú principal.\n\t1. Inscribir nuevo socio.\n\t2. Registrar nueva actividad.\n\t3. Inscribir socio existente en actividad.\n\t4. Darse de baja en actividad.");
             int option = readIntInRange(0, 4, "Introduce opción: ", "Error, no ha introducido un número entre 0 y 4.");
             switch (option){
                 case 0:
                     stayOnMenu = false;
-                    System.out.println("Ha seleccionado salir del menú de socios al menú principal.");
+                    System.out.println("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
-
+                    if ( MemberController.registerMember(sportCenter) ){
+                        System.out.println("Socio registrado correctamente.");
+                    }
                     break;
+                case 2:
+                    if ( ActivityController.registerActivity(sportCenter, SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) ){
+                        System.out.println("Actividad registrada correctamente.");
+                    }
+                    break;
+                case 3:
+                    if ( MemberController.subscribeMemberOnActivity(sportCenter) ){
+                        System.out.println("Socio registrado en actividad correctamente.");
+                    }
+                    break;
+                case 4:
+                    if ( MemberController.unsubscribeMemberOnActivity(sportCenter) ){
+                        System.out.println("Socio registrado en actividad correctamente.");
+                    }
+                    break;
+                default:
+                    System.out.println("Error, debe introducir un valor entre 0 y 4.");
+            }
+        }while(stayOnMenu);
+    }
+
+    public static void feeMenu(SportCenter sportCenter) throws Exception {
+        boolean stayOnMenu  = true;
+        do{
+            System.out.println("----MENÚ CUOTAS----\n\t0. Salir al menú principal.\n\t1. Calcular cuota mensual socio.\n\t2. Marcar cuota como pagada.\n\t3. Ver total pendiente (resto del año).\n\t4. Ver cuota de un mes concreto.");
+            int option = readIntInRange(0, 3, "Introduce opción: ", "Error, no ha introducido un número entre 0 y 3.");
+            switch (option){
+                case 0:
+                    stayOnMenu = false;
+                    System.out.println("Ha seleccionado salir del menú de inscripciones al menú principal.");
+                    break;
+                case 1:
+                    System.out.println("La cuota mensual es: " + MemberController.calculateMonthlyFeeMember(sportCenter) );
+                    break;
+                case 2:
+                    MemberController.markFeePayed(sportCenter);
+                    break;
+                case 3:
+                    System.out.println("El importe restante es: " + MemberController.totalLeftFeeYear(sportCenter, askMonth()) );
+                    break;
+                case 4:
+                    System.out.println("La cuota del mes es: " + MemberController.feeExactMonth(sportCenter) );
+                    break;
+                default:
+                    System.out.println("Error, debe introducir un valor entre 0 y 4.");
             }
         }while(stayOnMenu);
     }
@@ -60,7 +168,23 @@ public class ViewConsole {
     public static String askStringUser (String messageAskString){
         Scanner keyboard = new Scanner(System.in);
         System.out.println(messageAskString);
-        return keyboard.nextLine();
+        return keyboard.next();
+    }
+
+    public static String askDniMember (){
+        boolean validDni = false;
+        String dni = "";
+        do {
+            dni = askStringUser("Introduce DNI: ");
+            if(Utils.verifyDni(dni)){
+                validDni = true;
+            }
+        }while(!validDni);
+        return dni;
+    }
+
+    public static String askNameMember (){
+        return askStringUser("Introduce nombre: ");
     }
 
     public static int askIdSearchMember (){
@@ -79,10 +203,14 @@ public class ViewConsole {
         return readIntInRange(1,150, "Introduce edad del socio/a: ", "No ha introducido una edad válida, debe estar entre 1 y 150.");
     }
 
+    public static String askNameSportCenter (){
+        return askStringUser("Introduce nombre del Centro Deportivo: ");
+    }
+
     public static String askLevelIntensityActivity() throws Exception {
         Scanner keyboard = new Scanner(System.in);
         String levelIntensity = askStringUser("Introduzca nivel de intensidad de la actividad (iniciación, intermedio, avanzado): ");
-        keyboard.next();
+        keyboard.nextLine();
         if (! (levelIntensity.equalsIgnoreCase("Iniciación") || levelIntensity.equalsIgnoreCase("Intermedio") || levelIntensity.equalsIgnoreCase("Avanzado")) ){
             throw new Exception("Error, ha introducido un nivel de intensidad inválido.");
         }

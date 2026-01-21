@@ -1,9 +1,12 @@
 package app;
 
+import controller.PrincipalController;
+import view.ViewConsole;
+
 public class Main {
     public static void main(String[] args) {
-        //TODO: ERASE AFTER COMPLETING PROGRAM
-        String[] monthsEs = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-        String[] monthsEn = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        final int SIZE_ACTIVITY_ARRAY = 20;
+        final int SIZE_MEMBER_ARRAY = 20;
+        ViewConsole.showPrincipalMenu(PrincipalController.startApp(SIZE_ACTIVITY_ARRAY, SIZE_MEMBER_ARRAY), SIZE_MEMBER_ARRAY);
     }
 }

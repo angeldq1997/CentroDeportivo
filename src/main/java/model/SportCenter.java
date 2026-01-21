@@ -18,7 +18,19 @@ public class SportCenter {
     }
 
     public Activity[] getActivities() {
-        return this.activities;
+        Activity[] onlyNotNullActivities = new Activity[Utils.countArrayFilled(this.activities)];
+        int counter = 0;
+        for (int i = 0; i < this.activities.length; i++) {
+            if(this.activities[i] != null){
+                onlyNotNullActivities[counter] = activities[i];
+                counter++;
+            }
+        }
+        return onlyNotNullActivities;
+    }
+
+    public String getName (){
+        return this.name;
     }
 
     public int getNumberMembers(){
@@ -29,30 +41,47 @@ public class SportCenter {
         return Utils.countArrayFilled(this.activities);
     }
 
-    public boolean registerNewActivity(String name, int minuteDuration, String level, double monthlyPrice,int SIZE_MEMBERS_INSCRIBED){
+    public boolean registerNewActivity(String name, int minuteDuration, String level, double monthlyPrice,int SIZE_MEMBERS_INSCRIBED) throws Exception {
         boolean registerSuccessful = false;
-        for (int i = 0; i < this.activities.length && !registerSuccessful; i++) {
-            if(this.activities[i] == null){
-                this.activities[i] = new Activity(name, minuteDuration, level, monthlyPrice, SIZE_MEMBERS_INSCRIBED);
-                registerSuccessful = true;
+        if(existsActivityWithName(name)){
+            throw new Exception("Error, ya existe una actividad con este nombre.");
+        }else {
+            for (int i = 0; i < this.activities.length && !registerSuccessful; i++) {
+                if (this.activities[i] == null) {
+                    this.activities[i] = new Activity(name, minuteDuration, level, monthlyPrice, SIZE_MEMBERS_INSCRIBED);
+                    registerSuccessful = true;
+                }
             }
         }
         return registerSuccessful;
     }
 
-    public boolean registerNewMember(String dni, int age) throws Exception {
+    public boolean registerNewMember(String dni, String name, int age, Activity[] activitiesInscribed) throws Exception {
         boolean registerSuccessful = false;
         if(existsMemberWithDni(dni)){
             throw new Exception("Error, el DNI seleccionado ya está registrado.");
         } else{
             for (int i = 0; i < this.members.length && !registerSuccessful; i++) {
                 if(this.members[i] == null){
-                    this.members[i] = new Member(dni, age);
+                    this.members[i] = new Member(dni, name, age, activitiesInscribed);
                     registerSuccessful = true;
                 }
             }
         }
         return registerSuccessful;
+    }
+
+    public boolean subscribeMemberOnFoundActivity(int memberId, int activityId) throws Exception {
+        boolean subscriptionSuccessful = false;
+        if(!existsMemberWithId(memberId)){
+            throw new Exception("Error, no existe un socio con esta ID.");
+        } else if (!existsActivityWithId(activityId)) {
+            throw new Exception("Error, no existe una actividad con esta ID.");
+        } else{
+            this.findMemberById(memberId).subscribeMemberOnActivity(this.findActivityById(activityId));
+            subscriptionSuccessful = true;
+        }
+        return subscriptionSuccessful;
     }
 
     public boolean existsMemberWithId(int id){
@@ -69,6 +98,16 @@ public class SportCenter {
         boolean isAlreadyRegistered = false;
         for (int i = 0; i < this.activities.length && !isAlreadyRegistered; i++) {
             if(this.activities[i] != null && (this.activities[i].getActivityId() == id) ){
+                isAlreadyRegistered = true;
+            }
+        }
+        return isAlreadyRegistered;
+    }
+
+    public boolean existsActivityWithName (String name){
+        boolean isAlreadyRegistered = false;
+        for (int i = 0; i < this.activities.length && !isAlreadyRegistered; i++) {
+            if(this.activities[i] != null && (this.activities[i].getName().equalsIgnoreCase(name)) ){
                 isAlreadyRegistered = true;
             }
         }
@@ -133,7 +172,7 @@ public class SportCenter {
         return positionMemberFound;
     }
 
-    public int findActivityPositionById (int id){
+    public int findActivityPositionById (int id) throws Exception {
         boolean isActivityFound = false;
         int positionActivityFound = -1;
         for (int i = 0; i < this.activities.length && !isActivityFound; i++) {
@@ -141,6 +180,9 @@ public class SportCenter {
                 positionActivityFound = i;
                 isActivityFound = true;
             }
+        }
+        if(positionActivityFound == -1) {
+            throw new Exception("Error, el ID de la actividad a buscar no está en el sistema, por lo que no se puede determinar su posición.");
         }
         return positionActivityFound;
     }

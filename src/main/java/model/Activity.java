@@ -81,13 +81,11 @@ public class Activity {
         this.monthlyPrice = monthlyPrice;
     }
 
-    public Member[] getMembersInscribed() {
-        Member[] onlyNotNullMembers = new Member[Utils.countArrayFilled(this.membersInscribed)];
-        int counter = 0;
+    public String getMembersInscribed() {
+        String onlyNotNullMembers = "";
         for (int i = 0; i < this.membersInscribed.length; i++) {
             if(this.membersInscribed[i] != null){
-                onlyNotNullMembers[counter] = membersInscribed[i];
-                counter++;
+                onlyNotNullMembers = String.valueOf(membersInscribed[i]);
             }
         }
         return onlyNotNullMembers;
@@ -161,6 +159,6 @@ public class Activity {
                 "\nID Actividad = " + activityId +
                 "\nDuración (minutos) = " + minuteDuration +
                 "\nNivel de intensidad = " + level +
-                "\nMiembros inscritos = " + Arrays.toString(membersInscribed) + ".";
+                "\nMiembros inscritos = " + getMembersInscribed() + ".";
     }
 }

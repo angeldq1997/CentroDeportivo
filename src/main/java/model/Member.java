@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class Member {
     private int memberId;
     private String dni;
+    private String name;
     private int  age;
     private Activity[] activitiesInscribed;
     private double[] monthlyFees;
@@ -14,20 +15,22 @@ public class Member {
     private static int nextMember;
 
     //Constructor registrar socios nuevos
-    public Member(String dni, int age, Activity[] activitiesInscribed, double[] monthlyFees, boolean[] payedFees) {
+    public Member(String dni, String name, int age, Activity[] activitiesInscribed, double[] monthlyFees, boolean[] payedFees) {
         this.memberId = nextMember++;
         this.dni = dni;
+        this.name = name;
         this.age = age;
         this.activitiesInscribed = activitiesInscribed;
         this.monthlyFees = monthlyFees;
         this.payedFees = payedFees;
     }
 
-    public Member(String dni, int age) {
+    public Member(String dni, String name, int age, Activity[] activitiesInscribed) {
         this.memberId = nextMember++;
         this.dni = dni;
+        this.name = name;
         this.age = age;
-        this.activitiesInscribed = new Activity[10];
+        this.activitiesInscribed = activitiesInscribed;
         this.monthlyFees = new double[12];
         this.payedFees = new boolean[12];
     }
@@ -36,7 +39,8 @@ public class Member {
         this.memberId = -1;
         this.dni = "12345678A";
         this.age = 0;
-        this.activitiesInscribed = new Activity[10];
+        this.name = "Desconocido";
+        this.activitiesInscribed = new Activity[20];
         this.monthlyFees = new double[12];
         this.payedFees = new boolean[12];
     }
@@ -65,58 +69,63 @@ public class Member {
         this.age = age;
     }
 
-    public Activity[] getActivitiesInscribed() {
-        Activity[] onlyNotNullActivities = new Activity[Utils.countArrayFilled(this.activitiesInscribed)];
+    public String getActivitiesInscribed() {
+        String onlyNotNullActivities = "";
         int counter = 0;
         for (int i = 0; i < this.activitiesInscribed.length; i++) {
-            if(this.activitiesInscribed[i] != null){
-                onlyNotNullActivities[counter] = activitiesInscribed[i];
+            if (this.activitiesInscribed[i] != null) {
+                onlyNotNullActivities = String.valueOf(this.activitiesInscribed[i]);
                 counter++;
             }
         }
         return onlyNotNullActivities;
     }
 
-    public boolean[] getPayedFees() {
-        return payedFees;
+    public String getPayedFees() {
+        String listOfFees = "";
+        for (int i = 0; i < this.payedFees.length; i++) {
+            if(!this.payedFees[i]){
+                listOfFees = (i+1) + " NO PAGADO" + " | ";
+            }else{
+                listOfFees = (i+1) + " PAGADO" + " | ";
+            }
+        }
+        return listOfFees;
     }
 
     public void setPayedFees(boolean[] payedFees) {
         this.payedFees = payedFees;
     }
 
-    public double[] getMonthlyFees() {
-        return monthlyFees;
+    public String getMonthlyFees() {
+        String feesCollected = "";
+        for (int i = 0; i < this.monthlyFees.length; i++) {
+            if(this.monthlyFees[i] != 0.0){
+                feesCollected = (i+1) + this.monthlyFees[i] + " | ";
+            }
+        }
+        return feesCollected;
     }
 
     public void setMonthlyFees(double[] monthlyFees) {
         this.monthlyFees = monthlyFees;
     }
 
-    public boolean inscribeMemberOnActivity (int memberId, int activityId){
-        boolean inscribedCorrectly = false;
-        if(memberId > -1  || activityId > -1){
-            if (findExactActivityPosition() != -1){
-
-            }
-        }
-        return inscribedCorrectly;
-    }
-
-    public int findExactActivityPosition(){
-        int foundActivity = -1;
+    public boolean subscribeMemberOnActivity(Activity activityToSubscribe){
+        boolean subscribedSuccessful = false;
         for (int i = 0; i < this.activitiesInscribed.length; i++) {
-            if(this.activitiesInscribed[i] == null || this.activitiesInscribed[i].getActivityId() == -1 ){
-                foundActivity = i;
+            if(this.activitiesInscribed[i] == null){
+                this.activitiesInscribed[i] = activityToSubscribe;
+                subscribedSuccessful = true;
             }
         }
-        return foundActivity;
+        return subscribedSuccessful;
     }
 
     public int findExactActivityPosition(int activityId){
         int foundActivity = -1;
         for (int i = 0; i < this.activitiesInscribed.length; i++) {
-            if((this.activitiesInscribed[i] == null || this.activitiesInscribed[i].getActivityId() == -1) && this.activitiesInscribed[i].getActivityId() == activityId){
+            if(!(this.activitiesInscribed[i] == null || this.activitiesInscribed[i].getActivityId() == -1) && this.activitiesInscribed[i].getActivityId() == activityId){
                 foundActivity = i;
             }
         }
@@ -126,9 +135,9 @@ public class Member {
     public Activity findActivity(int activityIdToFind){
         Activity foundActivity = null;
         if( activityIdToFind > -1){
-            for (int i = 0; i < activitiesInscribed.length; i++) {
-                if(activitiesInscribed[i].getActivityId() != -1 && activitiesInscribed[i].getActivityId() == activityIdToFind){
-                    foundActivity = activitiesInscribed[i];
+            for (Activity activity : activitiesInscribed) {
+                if (activity.getActivityId() != -1 && activity.getActivityId() == activityIdToFind) {
+                    foundActivity = activity;
                 }
             }
         }
@@ -151,8 +160,8 @@ public class Member {
     public void recalculateMonthlyFees(int actualMonth){
         double totalMonth = 0.0;
         for (int i = actualMonth; i < this.monthlyFees.length; i++) {
-            for (int j = 0; j < this.activitiesInscribed.length; j++) {
-                totalMonth += this.activitiesInscribed[j].getMonthlyPrice();
+            for (Activity activity : this.activitiesInscribed) {
+                totalMonth += activity.getMonthlyPrice();
             }
             this.monthlyFees[i] = totalMonth;
         }
@@ -161,15 +170,17 @@ public class Member {
     public double actualFee () {
         double actualFee = 0.0;
         for (int i = 0; i < this.activitiesInscribed.length; i++) {
-            actualFee += this.activitiesInscribed[i].getMonthlyPrice();
+            if(this.activitiesInscribed[i] !=null){
+                actualFee += this.activitiesInscribed[i].getMonthlyPrice();
+            }
         }
         return actualFee;
     }
 
     public double yearlyFee (){
         double total = 0.0;
-        for (int i = 0; i < this.monthlyFees.length; i++) {
-            total += this.monthlyFees[i];
+        for (double monthlyFee : this.monthlyFees) {
+            total += monthlyFee;
         }
         return total;
     }
@@ -190,6 +201,7 @@ public class Member {
     public double yearLeftFee (int monthToSearch){
         monthToSearch--;
         double yearLeftTotal = 0.0;
+        recalculateMonthlyFees(monthToSearch);
         for (int i = monthToSearch; i < this.monthlyFees.length; i++) {
             yearLeftTotal += this.monthlyFees[i];
         }
@@ -203,9 +215,9 @@ public class Member {
 
     public String showOnlyInscribedActivities(){
         String onlyInscribedActivities = "";
-        for (int i = 0; i < this.activitiesInscribed.length; i++) {
-            if (this.activitiesInscribed[i] != null){
-                onlyInscribedActivities += this.activitiesInscribed[i].getName() + " " + this.activitiesInscribed[i].getMonthlyPrice() + "\n";
+        for (Activity activity : this.activitiesInscribed) {
+            if (activity != null) {
+                onlyInscribedActivities += activity.getName() + " " + activity.getMonthlyPrice() + "\n";
             }
         }
         return onlyInscribedActivities;
@@ -213,21 +225,21 @@ public class Member {
 
     @Override
     public String toString() {
-        return "\nID socio = " + memberId +
-                "\nDNI = " + dni +
-                "\nEdad = " + age +
-                "\nActividades inscritas = " + Arrays.toString(activitiesInscribed) +
-                "\nCuotas mensuales = " + Arrays.toString(monthlyFees) +
-                "\nCuotas pagadas = " + Arrays.toString(payedFees) + ".";
+        return  "\nID socio = " + this.memberId +
+                "\nDNI = " + this.dni +
+                "\nEdad = " + this.age +
+                "\nNombre = " + this.name +
+                "\nActividades inscritas = " + getActivitiesInscribed() +
+                "\nCuotas mensuales = " + getMonthlyFees() +
+                "\nCuotas pagadas = " + getPayedFees() + ".\n\n";
     }
 
     @Override
     public boolean equals(Object obj) {
         boolean membersAreEquals = false;
-        if (!(obj instanceof Member)){
-            Member memberToCheck = Member.class.cast(obj);
-            if(this.memberId == memberToCheck.getMemberId() && this.dni == memberToCheck.getDni()){
-                membersAreEquals = true;
+        if (obj instanceof Member memberToCheck){
+            if (this.memberId == memberToCheck.getMemberId() && this.dni.equals(memberToCheck.getDni())) {
+                    membersAreEquals = true;
             }
         }
         return membersAreEquals;
