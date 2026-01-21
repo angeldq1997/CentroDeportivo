@@ -44,4 +44,9 @@ public class MemberController {
         isPayed = true;
         return isPayed;
     }
+
+    public void getActivitiesMember (SportCenter sportCenter) throws Exception {
+        int memberId = ViewConsole.askIdSearchMember();
+        sportCenter.findMemberById(memberId).getActivitiesInscribed();
+    }
 }

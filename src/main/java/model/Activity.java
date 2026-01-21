@@ -22,6 +22,15 @@ public class Activity {
         this.membersInscribed = membersInscribed;
     }
 
+    public Activity (String name, int minuteDuration, String level, double monthlyPrice,int SIZE_MEMBERS_INSCRIBED) {
+        this.activityId = nextActivityId++;
+        this.name = name;
+        this.minuteDuration = minuteDuration;
+        this.level = level;
+        this.monthlyPrice = monthlyPrice;
+        this.membersInscribed = new Member[SIZE_MEMBERS_INSCRIBED];
+    }
+
     public Activity (){
         this.activityId = -1;
         this.name = "Actividad sin título";

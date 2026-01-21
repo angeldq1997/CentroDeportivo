@@ -16,7 +16,7 @@ public class ViewConsole {
                     System.out.println("Ha seleccionado salir del programa, gracias por su tiempo.");
                     break;
                 case 1:
-
+                    
                     break;
 
             }
@@ -79,6 +79,16 @@ public class ViewConsole {
         return readIntInRange(1,150, "Introduce edad del socio/a: ", "No ha introducido una edad válida, debe estar entre 1 y 150.");
     }
 
+    public static String askLevelIntensityActivity() throws Exception {
+        Scanner keyboard = new Scanner(System.in);
+        String levelIntensity = askStringUser("Introduzca nivel de intensidad de la actividad (iniciación, intermedio, avanzado): ");
+        keyboard.next();
+        if (! (levelIntensity.equalsIgnoreCase("Iniciación") || levelIntensity.equalsIgnoreCase("Intermedio") || levelIntensity.equalsIgnoreCase("Avanzado")) ){
+            throw new Exception("Error, ha introducido un nivel de intensidad inválido.");
+        }
+        return levelIntensity;
+    }
+
 
     /**
      * Solicita al usuario un número entero por consola y verifica que la entrada sea correcta.
@@ -89,7 +99,7 @@ public class ViewConsole {
      * @param msnError mensaje que se muestra cuando la entrada no es válida
      * @return el número entero introducido correctamente por el usuario
      */
-    private static int readInt(String msn, String msnError) {
+    public static int readInt(String msn, String msnError) {
         int result = 0;
         boolean isValid = true;
         Scanner sc = new Scanner(System.in);
@@ -119,7 +129,7 @@ public class ViewConsole {
      * @param msnError mensaje que se muestra cuando la entrada no es válida
      * @return un número entero dentro del rango [min, max]
      */
-    private static int readIntInRange(int min, int max, String msn, String msnError) {
+    public static int readIntInRange(int min, int max, String msn, String msnError) {
         int result = 0;
         boolean validNumber = false;
         do {

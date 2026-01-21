@@ -29,6 +29,17 @@ public class SportCenter {
         return Utils.countArrayFilled(this.activities);
     }
 
+    public boolean registerNewActivity(String name, int minuteDuration, String level, double monthlyPrice,int SIZE_MEMBERS_INSCRIBED){
+        boolean registerSuccessful = false;
+        for (int i = 0; i < this.activities.length && !registerSuccessful; i++) {
+            if(this.activities[i] == null){
+                this.activities[i] = new Activity(name, minuteDuration, level, monthlyPrice, SIZE_MEMBERS_INSCRIBED);
+                registerSuccessful = true;
+            }
+        }
+        return registerSuccessful;
+    }
+
     public boolean registerNewMember(String dni, int age) throws Exception {
         boolean registerSuccessful = false;
         if(existsMemberWithDni(dni)){
@@ -48,6 +59,16 @@ public class SportCenter {
         boolean isAlreadyRegistered = false;
         for (int i = 0; i < this.members.length && !isAlreadyRegistered; i++) {
             if(this.members[i] != null && (this.members[i].getMemberId() == id) ){
+                isAlreadyRegistered = true;
+            }
+        }
+        return isAlreadyRegistered;
+    }
+
+    public boolean existsActivityWithId(int id){
+        boolean isAlreadyRegistered = false;
+        for (int i = 0; i < this.activities.length && !isAlreadyRegistered; i++) {
+            if(this.activities[i] != null && (this.activities[i].getActivityId() == id) ){
                 isAlreadyRegistered = true;
             }
         }
@@ -82,6 +103,24 @@ public class SportCenter {
         return memberFound;
     }
 
+    public Activity findActivityById(int id) throws Exception {
+        boolean isActivityFound = false;
+        Activity activityFound = null;
+        if (id < 0){
+            throw new Exception("Error, la ID introducida no es válida.");
+        }
+        for (int i = 0; i < this.activities.length && !isActivityFound; i++) {
+            if(this.activities[i] != null && (this.activities[i].getActivityId() == id) ){
+                activityFound = this.activities[i];
+                isActivityFound = true;
+            }
+        }
+        if (activityFound == null){
+            throw new Exception("Error, no se ha encontrado el socio con la ID introducida.");
+        }
+        return activityFound;
+    }
+
     public int findMemberPositionById (int id){
         boolean isMemberFound = false;
         int positionMemberFound = -1;
@@ -92,6 +131,18 @@ public class SportCenter {
             }
         }
         return positionMemberFound;
+    }
+
+    public int findActivityPositionById (int id){
+        boolean isActivityFound = false;
+        int positionActivityFound = -1;
+        for (int i = 0; i < this.activities.length && !isActivityFound; i++) {
+            if(this.activities[i] != null && (this.activities[i].getActivityId() == id) ){
+                positionActivityFound = i;
+                isActivityFound = true;
+            }
+        }
+        return positionActivityFound;
     }
 
     @Override
