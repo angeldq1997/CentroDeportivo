@@ -38,7 +38,11 @@ public class ActivityController {
 
     public static String listMembersOfActivity(SportCenter sportCenter) throws Exception {
         int activityId = ViewConsole.askIdSearchActivity();
-        return (sportCenter.findActivityById(activityId).getMembersInscribed());
+        String listMembersOfActivity = "";
+        for (int i = 0; i < sportCenter.findActivityById(activityId).getMembersInscribed().length; i++) {
+            listMembersOfActivity += sportCenter.findActivityById(activityId).getMembersInscribed()[i];
+        }
+        return listMembersOfActivity;
     }
 
     public static boolean removeActivity(SportCenter sportCenter) throws Exception {

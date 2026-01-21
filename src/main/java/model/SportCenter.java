@@ -14,7 +14,13 @@ public class SportCenter {
     }
 
     public Member[] getMembers() {
-        return this.members;
+        Member[] notNullMembers = new Member[Utils.countArrayFilled(this.members)];
+        int counter = 0;
+        for (int i = 0; i < this.members.length; i++) {
+            notNullMembers[counter] = this.members[i];
+            counter++;
+        }
+        return notNullMembers;
     }
 
     public Activity[] getActivities() {

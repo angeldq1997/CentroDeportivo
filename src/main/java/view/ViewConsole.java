@@ -86,16 +86,20 @@ public class ViewConsole {
                     System.out.println("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
-                    ActivityController.listActivities(sportCenter);
+                    System.out.println(ActivityController.listActivities(sportCenter));
                     break;
                 case 2:
-                    ActivityController.listMembersOfActivity(sportCenter);
+                    System.out.println(ActivityController.listMembersOfActivity(sportCenter));
                     break;
                 case 3:
-                    ActivityController.searchActivityById(sportCenter);
+                    System.out.println(ActivityController.searchActivityById(sportCenter));
                     break;
                 case 4:
-                    ActivityController.removeActivity(sportCenter);
+                    if(ActivityController.removeActivity(sportCenter)){
+                        System.out.println("Actividad eliminada satisfactoriamente.");
+                    }else{
+                        System.out.println("No se ha podido eliminar la actividad.");
+                    }
                     break;
             }
         }while(stayOnMenu);

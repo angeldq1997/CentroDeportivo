@@ -22,7 +22,11 @@ public class MemberController {
     }
 
     public static String listMembers(SportCenter sportCenter){
-        return Arrays.toString(sportCenter.getMembers());
+        String listMembers = "";
+        for (int i = 0; i < sportCenter.getMembers().length; i++) {
+            listMembers += sportCenter.getMembers()[i];
+        }
+        return listMembers;
     }
 
     public double actualFee(SportCenter sportCenter) throws Exception {
