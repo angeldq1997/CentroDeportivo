@@ -2,86 +2,161 @@ package controller;
 
 import model.Activity;
 import model.Member;
-import model.SportCenter;
-import view.ViewConsole;
-
-import java.util.Arrays;
+import view.ConsoleView;
 
 public class MemberController {
+    private Member actualMember;
 
-    public static boolean registerMember(SportCenter sportCenter) throws Exception {
-        boolean registerSuccessful = false;
-        String dni = ViewConsole.askStringUser("Introduce DNI del socio/a a registrar: ");
-        int age = ViewConsole.askAge();
-        String name = ViewConsole.askNameMember();
-        Activity[] activitiesInscribed = new Activity[10];
-        if (sportCenter.registerNewMember(dni, name, age, activitiesInscribed) ){
-            registerSuccessful = true;
+    public Member memberCreated(String dni, String name, int age, int activitiesInscribed){
+        return new Member(dni, name, age, activitiesInscribed);
+    }
+
+    public boolean subscribeMemberOnActivity(Activity activityToSubscribe){
+        boolean subscribedSuccessful = false;
+        for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
+            if(this.actualMember.getActivitiesInscribed()[i] == null){
+                this.actualMember.getActivitiesInscribed()[i] = activityToSubscribe;
+                subscribedSuccessful = true;
+            }
         }
-        return registerSuccessful;
+        return subscribedSuccessful;
     }
 
-    public static String listMembers(SportCenter sportCenter){
-        String listMembers = "";
-        for (int i = 0; i < sportCenter.getMembers().length; i++) {
-            listMembers += sportCenter.getMembers()[i];
+    public boolean unsubscribeActivity() throws Exception {
+        boolean unsubscribedSuccessful = false;
+        int activityId = ConsoleView.askIdSearchActivity();
+        if( activityId > -1){
+            if(this.findActivityOnInscribed(activityId) != null){
+                this.actualMember.getActivitiesInscribed()[this.findExactActivityPosition(activityId)] = null;
+                unsubscribedSuccessful = true;
+            }
+        }else{
+            throw new Exception("Error, la id de Actividad introducida es inválida, debe ser mayor de -1.");
         }
-        return listMembers;
+        return unsubscribedSuccessful;
     }
 
-    public double actualFee(SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        return sportCenter.findMemberById(memberId).actualFee();
-    }
-
-    public static double totalLeftFeeYear(SportCenter sportCenter, int actualMonth) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        return sportCenter.findMemberById(memberId).yearLeftFee(actualMonth);
-    }
-
-    public static Member searchMemberById(SportCenter sportCenter) throws Exception {
-        Member memberToFind = null;
-        int memberId = ViewConsole.askIdSearchMember();
-        if(sportCenter.findMemberById(memberId) != null){
-            memberToFind = sportCenter.findMemberById(memberId);
+    public int findExactActivityPosition(int activityId){
+        int foundActivity = -1;
+        for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
+            if(!(this.actualMember.getActivitiesInscribed()[i] == null || this.actualMember.getActivitiesInscribed()[i].getActivityId() == -1) && this.actualMember.getActivitiesInscribed()[i].getActivityId() == activityId){
+                foundActivity = i;
+            }
         }
-        return memberToFind;
+        return foundActivity;
     }
 
-    public static boolean subscribeMemberOnActivity(SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        int activityId = ViewConsole.askIdSearchActivity();
-        return sportCenter.subscribeMemberOnFoundActivity(memberId, activityId);
+    public Activity findActivityOnInscribed(int activityIdToFind){
+        Activity foundActivity = null;
+        if( activityIdToFind > -1){
+            for (Activity activity : actualMember.getActivitiesInscribed()) {
+                if (activity.getActivityId() != -1 && activity.getActivityId() == activityIdToFind) {
+                    foundActivity = activity;
+                }
+            }
+        }
+        return foundActivity;
     }
 
-    public static boolean unsubscribeMemberOnActivity(SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        int activityId = ViewConsole.askIdSearchActivity();
-        return sportCenter.findMemberById(memberId).unsubscribeActivity(activityId);
+    public void recalculateMonthlyFees(int actualMonth){
+        double totalMonth = 0.0;
+        for (int i = actualMonth; i < this.actualMember.getMonthlyFees().length; i++) {
+            for (Activity activity : this.actualMember.getActivitiesInscribed()) {
+                if(activity != null) {
+                    totalMonth += activity.getMonthlyPrice();
+                }
+            }
+            this.actualMember.getMonthlyFees()[i] = totalMonth;
+        }
     }
 
-    public static double calculateMonthlyFeeMember(SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        return sportCenter.findMemberById(memberId).actualFee();
+    public double actualFee () {
+        double actualFee = 0.0;
+        for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
+            if(this.actualMember.getActivitiesInscribed()[i] !=null){
+                actualFee += this.actualMember.getActivitiesInscribed()[i].getMonthlyPrice();
+            }
+        }
+        return actualFee;
     }
 
-    public static double feeExactMonth(SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        int monthToSearch = ViewConsole.askMonth();
-        return sportCenter.findMemberById(memberId).feeOfExactMonth(monthToSearch);
+    public double yearlyFee (){
+        double total = 0.0;
+        for (double monthlyFee : this.actualMember.getMonthlyFees()) {
+            total += monthlyFee;
+        }
+        return total;
     }
 
-    public static boolean markFeePayed(SportCenter sportCenter) throws Exception {
-        boolean isPayed = false;
-        int memberId = ViewConsole.askIdSearchMember();
-        int month = ViewConsole.askMonth();
-        sportCenter.findMemberById(memberId).modifyPayedMonth(month, true);
-        isPayed = true;
-        return isPayed;
+    public double feeOfExactMonth (int monthToSearch) throws Exception {
+        double exactFee = 0.0;
+        //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = enero,
+        // reducimos ese número una vez para que corresponda con el array.
+        monthToSearch--;
+        if (monthToSearch < 1 || monthToSearch > 12){
+            throw new Exception("Error, mes introducido inválido, debe introducir un número entre 1 y 12.");
+        } else{
+            exactFee = this.actualMember.getMonthlyFees()[monthToSearch];
+        }
+        return exactFee;
     }
 
-    public void getActivitiesMember (SportCenter sportCenter) throws Exception {
-        int memberId = ViewConsole.askIdSearchMember();
-        sportCenter.findMemberById(memberId).getActivitiesInscribed();
+    public double yearLeftFee (int monthToSearch){
+        monthToSearch--;
+        double yearLeftTotal = 0.0;
+        recalculateMonthlyFees(monthToSearch);
+        for (int i = monthToSearch; i < this.actualMember.getMonthlyFees().length; i++) {
+            yearLeftTotal += this.actualMember.getMonthlyFees()[i];
+        }
+        return yearLeftTotal;
+    }
+
+    public void modifyPayedMonth(int monthToCheck, boolean statusPayment){
+        monthToCheck--;
+        this.actualMember.getPayedFees()[monthToCheck] = statusPayment;
+    }
+
+    public String showOnlyInscribedActivities(){
+        String onlyInscribedActivities = "";
+        for (Activity activity : this.actualMember.getActivitiesInscribed()) {
+            if (activity != null) {
+                onlyInscribedActivities += activity.getName() + " " + activity.getMonthlyPrice() + "\n";
+            }
+        }
+        return onlyInscribedActivities;
+    }
+
+    public String getPayedFeesOnString() {
+        String listOfFees = "";
+        for (int i = 0; i < this.actualMember.getPayedFees().length; i++) {
+            if(!this.actualMember.getPayedFees()[i]){
+                listOfFees = (i+1) + " NO PAGADO" + " | ";
+            }else{
+                listOfFees = (i+1) + " PAGADO" + " | ";
+            }
+        }
+        return listOfFees;
+    }
+
+    public String getNotNullActivitiesInscribed() {
+        String onlyNotNullActivities = "";
+        int counter = 0;
+        for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
+            if (this.actualMember.getActivitiesInscribed()[i] != null) {
+                onlyNotNullActivities = String.valueOf(this.actualMember.getActivitiesInscribed()[i]);
+                counter++;
+            }
+        }
+        return onlyNotNullActivities;
+    }
+
+    public String getMonthlyFeesOnString() {
+        String feesCollected = "";
+        for (int i = 0; i < this.actualMember.getMonthlyFees().length; i++) {
+            if(this.actualMember.getMonthlyFees()[i] != 0.0){
+                feesCollected = (i+1) + this.actualMember.getMonthlyFees()[i] + " | ";
+            }
+        }
+        return feesCollected;
     }
 }

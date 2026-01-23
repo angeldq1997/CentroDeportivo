@@ -82,6 +82,10 @@ public class Activity {
     }
 
     public Member[] getMembersInscribed() {
+        return membersInscribed;
+    }
+
+    public Member[] getNotNullMembersInscribed() {
         Member[] onlyNotNullMembers = new Member[Utils.countArrayFilled(this.membersInscribed)];
         int counter = 0;
         for (int i = 0; i < this.membersInscribed.length; i++) {
@@ -95,64 +99,6 @@ public class Activity {
 
     public void setMembersInscribed(Member[] membersInscribed) {
         this.membersInscribed = membersInscribed;
-    }
-
-    public int countMembersFilled (){
-        int total = 0;
-        if(this.membersInscribed != null){
-            for (int i = 0; i < this.membersInscribed.length; i++) {
-                if (this.membersInscribed[i] != null || this.membersInscribed[i].getMemberId() == -1) {
-                    total++;
-                }
-            }
-        }else{
-            total = -1;
-        }
-        return total;
-    }
-
-    public boolean memberIsAlreadyInscribed(Member memberToSearch){
-        boolean isAlreadyInscribed = false;
-        for (int i = 0; i < this.membersInscribed.length; i++) {
-            if(this.membersInscribed[i] != null && this.membersInscribed[i].equals(memberToSearch)){
-                isAlreadyInscribed = true;
-            }
-        }
-        return isAlreadyInscribed;
-    }
-
-    public boolean subscribeMemberToActivity (Member memberToSubscribe) throws Exception {
-        boolean subscribedSuccessful = false;
-        if( !this.memberIsAlreadyInscribed(memberToSubscribe) ){
-            if(Utils.countArrayFilled(this.membersInscribed) == this.membersInscribed.length){
-                throw new Exception("Error, no puede inscribirse el socio, la actividad está completa.");
-            }else{
-                for (int i = 0; i < this.membersInscribed.length && !subscribedSuccessful; i++) {
-                    if (this.membersInscribed[i] == null){
-                        this.membersInscribed[i] = memberToSubscribe;
-                        subscribedSuccessful = true;
-                    }
-                }
-            }
-        }else{
-            throw new Exception("Error, el socio ya está suscrito a la actividad.");
-        }
-        return subscribedSuccessful;
-    }
-
-    public boolean unsubscribeMemberToActivity(Member memberToSearch) throws Exception {
-        boolean unsubscribeMemberSuccessful = false;
-        if(!this.memberIsAlreadyInscribed(memberToSearch)){
-            throw new Exception("Error, el socio no está inscrito, no se le puede dar de baja.");
-        }else{
-            for (int i = 0; i < this.membersInscribed.length && !unsubscribeMemberSuccessful; i++) {
-                if(this.membersInscribed[i] == memberToSearch){
-                    this.membersInscribed[i] = null;
-                    unsubscribeMemberSuccessful = true;
-                }
-            }
-        }
-        return unsubscribeMemberSuccessful;
     }
 
     @Override
