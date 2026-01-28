@@ -7,6 +7,12 @@ import view.ConsoleView;
 public class MemberController {
     private Member actualMember;
 
+    public void updateActualMember(Member member){
+        if(member != null) {
+            member = this.actualMember;
+        }
+    }
+
     public Member memberCreated(String dni, String name, int age, int activitiesInscribed){
         return new Member(dni, name, age, activitiesInscribed);
     }
@@ -88,10 +94,11 @@ public class MemberController {
         return total;
     }
 
-    public double feeOfExactMonth (int monthToSearch) throws Exception {
+    public double feeOfExactMonth () throws Exception {
         double exactFee = 0.0;
         //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = enero,
         // reducimos ese número una vez para que corresponda con el array.
+        int monthToSearch = ConsoleView.askMonth();
         monthToSearch--;
         if (monthToSearch < 1 || monthToSearch > 12){
             throw new Exception("Error, mes introducido inválido, debe introducir un número entre 1 y 12.");
@@ -101,7 +108,8 @@ public class MemberController {
         return exactFee;
     }
 
-    public double yearLeftFee (int monthToSearch){
+    public double yearLeftFee (){
+        int monthToSearch = ConsoleView.askMonth();
         monthToSearch--;
         double yearLeftTotal = 0.0;
         recalculateMonthlyFees(monthToSearch);
@@ -111,9 +119,15 @@ public class MemberController {
         return yearLeftTotal;
     }
 
-    public void modifyPayedMonth(int monthToCheck, boolean statusPayment){
+    public boolean markPayedMonth() throws Exception {
+        int monthToCheck = ConsoleView.askMonth();
         monthToCheck--;
-        this.actualMember.getPayedFees()[monthToCheck] = statusPayment;
+        if(this.actualMember.getPayedFees()[monthToCheck]){
+            throw new Exception("Error, el mes seleccionado ya había sido pagado.");
+        }else {
+            this.actualMember.getPayedFees()[monthToCheck] = true;
+        }
+        return this.actualMember.getPayedFees()[monthToCheck];
     }
 
     public String showOnlyInscribedActivities(){

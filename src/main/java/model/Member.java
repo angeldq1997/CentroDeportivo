@@ -46,11 +46,11 @@ public class Member {
     }
 
     public int getMemberId() {
-        return memberId;
+        return this.memberId;
     }
 
     public String getDni() {
-        return dni;
+        return this.dni;
     }
 
     public void setDni(String dni) {
@@ -58,7 +58,11 @@ public class Member {
     }
 
     public int getAge() {
-        return age;
+        return this.age;
+    }
+
+    public String getName(){
+        return this.name;
     }
 
     public void setAge(int age) {
@@ -81,15 +85,58 @@ public class Member {
         return monthlyFees;
     }
 
+    private String listActivitiesInscribed(){
+        String listActivities = "Actividades inscritas:\n";
+        for (int i = 0; i < this.getActivitiesInscribed().length; i++) {
+            if(this.getActivitiesInscribed()[i] != null){
+                listActivities += this.getActivitiesInscribed()[i].toString() + "\n";
+            }
+        }
+        if(listActivities.trim().equals("Actividades inscritas:")){
+            listActivities = "No hay actividades inscritas ahora mismo.";
+        }
+        return listActivities;
+    }
+
+    private String listMonthlyFees(){
+        String listMonthlyFees = "";
+        for (int i = 0; i < this.getMonthlyFees().length; i++) {
+            if(this.getMonthlyFees()[i] != 0.0){
+                listMonthlyFees += this.getMonthlyFees()[i] + "\n";
+            }
+        }
+        if(listMonthlyFees.trim().isEmpty()){
+            listMonthlyFees = "No hay cuotas para este año ahora mismo.";
+        }
+        return listMonthlyFees;
+    }
+
+    private String listPayedFees(){
+        boolean allPayedFees = true;
+        String listPayedFees = "CUOTAS DE ESTE AÑO: \n";
+        for (int i = 0; i < this.getPayedFees().length; i++) {
+            if(!this.getPayedFees()[i] && this.getMonthlyFees()[i] != 0.0){
+                listPayedFees += "X Importe PENDIENTE de pagar para el mes (" + (i+1) + ")\n";
+                allPayedFees = false;
+            }else{
+                listPayedFees += "O Importe PAGADO para el mes (" + (i+1) + ")\n";
+            }
+        }
+        if(allPayedFees){
+            listPayedFees = "TODAS LOS PAGOS DEL MES ESTÁN PAGADOS ACTUALMENTE";
+        }
+        return listPayedFees;
+    }
+
     @Override
     public String toString() {
         return  "\nID socio = " + this.memberId +
                 "\nDNI = " + this.dni +
                 "\nEdad = " + this.age +
                 "\nNombre = " + this.name +
-                "\nActividades inscritas = " + getActivitiesInscribed() +
-                "\nCuotas mensuales = " + getMonthlyFees() +
-                "\nCuotas pagadas = " + getPayedFees() + ".\n\n";
+                "\nActividades inscritas = " + listActivitiesInscribed() +
+                "\nCuotas mensuales = " + listMonthlyFees() +
+                "\nCuotas pagadas = " + listPayedFees() + ".\n";
     }
 
     @Override

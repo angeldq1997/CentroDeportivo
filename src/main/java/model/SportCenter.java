@@ -4,8 +4,8 @@ import utils.Utils;
 
 public class SportCenter {
     private String name;
-    private Member[] members;
-    private Activity[] activities;
+    private final Member[] members;
+    private final Activity[] activities;
 
     public SportCenter(String name, Member[] members, Activity[] activities) {
         this.name = name;

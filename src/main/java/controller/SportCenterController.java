@@ -7,16 +7,24 @@ import utils.Utils;
 import view.ConsoleView;
 
 public class SportCenterController {
-    private ActivityController actController;
-    private MemberController memController;
     private SportCenter actualSportCenter;
+
+    public SportCenterController(SportCenter actualSportCenter) {
+        this.actualSportCenter = actualSportCenter;
+    }
+
+    public void setActualSportCenter(SportCenter sportCenter){
+        actualSportCenter = sportCenter;
+    }
 
     public Member[] obtainMembersNotNull() {
         Member[] notNullMembers = new Member[Utils.countArrayFilled(actualSportCenter.getMembers())];
         int counter = 0;
         for (int i = 0; i < actualSportCenter.getMembers().length; i++) {
-            notNullMembers[counter] = actualSportCenter.getMembers()[i];
-            counter++;
+            if(actualSportCenter.getMembers()[i] != null) {
+                notNullMembers[counter] = actualSportCenter.getMembers()[i];
+                counter++;
+            }
         }
         return notNullMembers;
     }
@@ -33,45 +41,6 @@ public class SportCenterController {
         return onlyNotNullActivities;
     }
 
-    public boolean registerNewMember() throws Exception {
-        boolean registerSuccessful = false;
-        if(existsMemberWithDni()){
-            throw new Exception("Error, el DNI seleccionado ya está registrado.");
-        } else{
-            for (int i = 0; i < actualSportCenter.getMembers().length && !registerSuccessful; i++) {
-                if(actualSportCenter.getMembers()[i] == null){
-                    String dni = ConsoleView.askDniMember();
-                    String name = ConsoleView.askNameMember();
-                    int age = ConsoleView.askAge();
-                    int sizeMembersInscribed = Utils.readIntInRange(1, 40, "Introduce número máximo actividades para inscribirse: ", "Error, debe introducir un número entre 1 y 40.")
-                    actualSportCenter.getMembers()[i] = memController.memberCreated(dni, name, age, sizeMembersInscribed);
-                    registerSuccessful = true;
-                }
-            }
-        }
-        return registerSuccessful;
-    }
-
-    public boolean registerActivity() throws Exception {
-        boolean activityRegisteredSuccessfully = false;
-        if(Utils.countArrayFilled(actualSportCenter.getActivities()) == actualSportCenter.getActivities().length){
-            throw new Exception("Error, no se ha podido registrar la actividad, está completo el registro.");
-        }else {
-            for (int i = 0; i < actualSportCenter.getActivities().length && !activityRegisteredSuccessfully; i++) {
-                if (actualSportCenter.getActivities()[i] == null) {
-                    String activityName = ConsoleView.askStringUser("Introduce nombre de la actividad: ");
-                    int minuteDuration = Utils.readIntInRange(1, 300, "Introduce minutos de duración de la actividad: ", "Error, ha introducido un valor inválido debe estar entre 1 y 300.");
-                    String level = ConsoleView.askLevelIntensityActivity();
-                    double monthlyPrice = Utils.readIntInRange(1, 40, "Introduce precio mensual de la actividad: ", "Error, debe introducido un valor entre 1 y 40.");
-                    int sizeMembers = Utils.readIntInRange(1, 40, "Introduce número de miembros de la actividad: ", "Error, debe introducir un número entre 1 y 40.")
-                    actualSportCenter.getActivities()[i] = actController.activityCreated(activityName, minuteDuration, level, monthlyPrice, sizeMembers);
-                    activityRegisteredSuccessfully = true;
-                }
-            }
-        }
-        return activityRegisteredSuccessfully;
-    }
-
     private boolean subscribeMemberOnActivity(Activity activityToSubscribe, Member actualMember){
         boolean subscribedSuccessful = false;
         for (int i = 0; i < actualMember.getActivitiesInscribed().length; i++) {
@@ -83,20 +52,45 @@ public class SportCenterController {
         return subscribedSuccessful;
     }
 
-    public boolean subscribeMemberOnFoundActivity(int memberId, int activityId) throws Exception {
+    public boolean subscribeMemberOnFoundActivity() throws Exception {
         boolean subscriptionSuccessful = false;
-        if(!existsMemberWithId(memberId)){
-            throw new Exception("Error, no existe un socio con esta ID.");
-        } else if (!existsActivityWithId(activityId)) {
-            throw new Exception("Error, no existe una actividad con esta ID.");
-        } else{
-            if( subscribeMemberOnActivity(this.findActivityById(activityId), findMemberById(memberId)) ){
-                subscriptionSuccessful = true;
-            }else{
-                throw new Exception("Error, no se ha podido suscribir el miembro en la actividad.");
+        boolean subscriptionSuccessful2 = false;
+        int memberId = ConsoleView.askIdSearchMember();
+        int activityId = ConsoleView.askIdSearchActivity();
+        Member actualMember = findMemberById(memberId);
+        Activity foundActivity = findActivityById(activityId);
+        if(!existsMemberWithId(memberId) && !existsActivityWithId(activityId)){
+            throw new Exception("Error, no existe un socio/actividad con este ID.");
+        }
+        if(foundActivity.getNotNullMembersInscribed().length != foundActivity.getMembersInscribed().length){
+            throw new Exception("Error, la actividad ya está llena.");
+        }
+        if(memberAlreadySubscribedActivity(foundActivity, memberId)){
+            throw new Exception("Error, el socio ya está inscrito en esta actividad.");
+        }else {
+            for (int i = 0; i < foundActivity.getMembersInscribed().length; i++) {
+                if (foundActivity.getMembersInscribed()[i] == null) {
+                    foundActivity.getMembersInscribed()[i] = actualMember;
+                }
+            }
+            for (int i = 0; i < actualMember.getActivitiesInscribed().length && !subscriptionSuccessful; i++) {
+                if (actualMember.getActivitiesInscribed()[i] == null) {
+                    actualMember.getActivitiesInscribed()[i] = findActivityById(activityId);
+                    subscriptionSuccessful = true;
+                }
             }
         }
         return subscriptionSuccessful;
+    }
+
+    public boolean memberAlreadySubscribedActivity(Activity activityToCheck, int memberIdToCheck){
+        boolean memberIsAlreadySubscribed = false;
+        for (int i = 0; i < activityToCheck.getMembersInscribed().length && !memberIsAlreadySubscribed; i++) {
+            if(activityToCheck.getMembersInscribed()[i] != null && activityToCheck.getMembersInscribed()[i].getMemberId() == memberIdToCheck ){
+                memberIsAlreadySubscribed = true;
+            }
+        }
+        return memberIsAlreadySubscribed;
     }
 
     public boolean existsMemberWithId(int id){
@@ -133,22 +127,18 @@ public class SportCenterController {
         boolean isAlreadyRegistered = false;
         String dni = ConsoleView.askDniMember();
         for (int i = 0; i < actualSportCenter.getMembers().length && !isAlreadyRegistered; i++) {
-            if(actualSportCenter.getMembers()[i] != null && (actualSportCenter.getMembers()[i].getDni() == dni) ){
+            if(actualSportCenter.getMembers()[i] != null && (actualSportCenter.getMembers()[i].getDni().equalsIgnoreCase(dni)) ){
                 isAlreadyRegistered = true;
             }
         }
         return isAlreadyRegistered;
     }
 
-    public Member findMemberById() throws Exception {
+    public Member findMemberById(int memberId) throws Exception {
         boolean isMemberFound = false;
         Member memberFound = null;
-        int id = ConsoleView.askIdSearchMember();
-        if (id < 0){
-            throw new Exception("Error, la ID introducida no es válida.");
-        }
         for (int i = 0; i < actualSportCenter.getMembers().length && !isMemberFound; i++) {
-            if(actualSportCenter.getMembers()[i] != null && (actualSportCenter.getMembers()[i].getMemberId() == id) ){
+            if(actualSportCenter.getMembers()[i] != null && (actualSportCenter.getMembers()[i].getMemberId() == memberId) ){
                 memberFound = actualSportCenter.getMembers()[i];
                 isMemberFound = true;
             }
@@ -162,9 +152,6 @@ public class SportCenterController {
     public Activity findActivityById(int id) throws Exception {
         boolean isActivityFound = false;
         Activity activityFound = null;
-        if (id < 0){
-            throw new Exception("Error, la ID introducida no es válida.");
-        }
         for (int i = 0; i < actualSportCenter.getActivities().length && !isActivityFound; i++) {
             if(actualSportCenter.getActivities()[i] != null && (actualSportCenter.getActivities()[i].getActivityId() == id) ){
                 activityFound = actualSportCenter.getActivities()[i];
@@ -224,8 +211,13 @@ public class SportCenterController {
     public Member searchMemberById() throws Exception {
         Member memberToFind = null;
         int memberId = ConsoleView.askIdSearchMember();
-        if(findMemberById() != null){
-            memberToFind = findMemberById();
+        for (int i = 0; i < this.actualSportCenter.getMembers().length; i++) {
+            if(this.actualSportCenter.getMembers()[i] != null && this.actualSportCenter.getMembers()[i].getMemberId() == memberId){
+                memberToFind = this.actualSportCenter.getMembers()[i];
+            }
+        }
+        if(memberToFind == null){
+            throw new Exception("El socio a buscar con la ID introducida no existe.");
         }
         return memberToFind;
     }
@@ -233,23 +225,54 @@ public class SportCenterController {
     public String listMembersOfActivity() throws Exception {
         int activityId = ConsoleView.askIdSearchActivity();
         String listMembersOfActivity = "";
-        for (int i = 0; i < findActivityById(activityId).getMembersInscribed().length; i++) {
-            listMembersOfActivity += findActivityById(activityId).getMembersInscribed()[i];
+        Activity foundActivity = findActivityById(activityId);
+        for (int i = 0; i < foundActivity.getMembersInscribed().length; i++) {
+            if(foundActivity.getMembersInscribed()[i] != null) {
+                listMembersOfActivity += foundActivity.getMembersInscribed()[i];
+            }
         }
         return listMembersOfActivity;
+    }
+
+    public String listActivities() throws Exception {
+        String listActivities = "";
+        if(obtainActivitiesNotNull().length == 0){
+            throw new Exception("Error, no hay actividades en el centro deportivo.");
+        }
+        for (int i = 0; i < obtainActivitiesNotNull().length; i++) {
+            if(obtainActivitiesNotNull()[i] != null){
+                listActivities += obtainActivitiesNotNull()[i].toString();
+            }
+        }
+        return listActivities;
+    }
+
+    public String listMembers() throws Exception {
+        String listMembers = "";
+        if(obtainMembersNotNull() == null ) {
+            throw new Exception("Error, no hay socios en el registro del centro deportivo.");
+        }
+        for (int i = 0; i < obtainMembersNotNull().length; i++) {
+            if(obtainMembersNotNull()[i] != null){
+                listMembers += obtainMembersNotNull()[i].toString();
+            }
+        }
+        return listMembers;
     }
 
     public boolean removeActivity() throws Exception {
         boolean activityRemoved = false;
         int activityId = ConsoleView.askIdSearchActivity();
-        int position = findActivityPositionById(activityId);
-        actualSportCenter.getActivities()[position] = null;
-        if(actualSportCenter.getActivities()[position] == null){
-            ConsoleView.showMessage("Actividad borrada correctamente.");
+        if(existsActivityWithId(activityId)) {
+            for (int i = 0; i < this.actualSportCenter.getActivities().length && !activityRemoved; i++) {
+                if (this.actualSportCenter.getActivities()[i] != null && this.actualSportCenter.getActivities()[i].getActivityId() == activityId) {
+                    this.actualSportCenter.getActivities()[i] = null;
+                    activityRemoved = true;
+                }
+            }
         }else{
-            ConsoleView.showError("la actividad no ha podido ser borrada.");
+            throw new Exception("Error, no se puede eliminar la actividad con el ID introducido, es posible que no exista.");
         }
-        activityRemoved = true;
         return activityRemoved;
     }
 }

@@ -39,7 +39,13 @@ public class Utils {
     }
 
     public static boolean verifyDni(String dni){
-        return ((dni != null || dni.isEmpty()) && dni.matches("[0-9]{8}[A-Z a-z]"));
+        boolean validDni = false;
+        if(dni != null || !dni.isEmpty()){
+            if (dni.matches("[0-9]{8}[A-Z a-z]")){
+                validDni = true;
+            }
+        }
+        return validDni;
     }
 
     /**

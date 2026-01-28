@@ -101,12 +101,28 @@ public class Activity {
         this.membersInscribed = membersInscribed;
     }
 
+    private String listMembersInscribed(){
+        boolean nobodyListed = true;
+        String listMembers = "";
+        for (int i = 0; i < this.getMembersInscribed().length; i++) {
+            if(this.getMembersInscribed()[i] != null){
+                listMembers += "\t" + this.getMembersInscribed()[i].getName() + " con DNI " + this.getMembersInscribed()[i].getDni() + ".\n";
+                nobodyListed = false;
+            }
+        }
+        if(nobodyListed){
+            listMembers = "No hay miembros anotados a esta actividad.";
+        }
+        return listMembers;
+    }
+
     @Override
     public String toString() {
-        return  name + ":" +
-                "\nID Actividad = " + activityId +
-                "\nDuración (minutos) = " + minuteDuration +
-                "\nNivel de intensidad = " + level +
-                "\nMiembros inscritos = " + getMembersInscribed() + ".";
+        return  "\n" + this.name + ":" +
+                "\nID Actividad = " + this.activityId +
+                ".\nDuración (minutos) = " + this.minuteDuration +
+                ".\nNivel de intensidad = " + this.level +
+                ".\nPrecio al mes = " + this.monthlyPrice +
+                ".\nMiembros inscritos =\n" + listMembersInscribed();
     }
 }

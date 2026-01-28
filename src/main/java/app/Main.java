@@ -1,13 +1,6 @@
 package app;
 
-import controller.ActivityController;
-import controller.MemberController;
-import controller.;
-import controller.SportCenterController;
-import model.SportCenter;
-import view.ConsoleView;
-
-import javax.swing.text.View;
+import controller.PrincipalController;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,12 +8,9 @@ public class Main {
         final int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY = 20;
         final int SIZE_MEMBER_ARRAY = 20;
 
-        MemberController memController = new MemberController();
-        ActivityController actController = new ActivityController();
-        SportCenterController sprtController = new SportCenterController();
-        PrincipalController prinController = new PrincipalController();
-
-        SportCenter sportCenter = prinController.startApp(SIZE_ACTIVITY_ARRAY, SIZE_MEMBER_ARRAY);
-
+        //Inicio controlador principal
+        PrincipalController prinController = new PrincipalController(SIZE_ACTIVITY_ARRAY, SIZE_MEMBER_ARRAY);
+        //Entramos en el menú del programa
+        prinController.showPrincipalMenu(SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY);
     }
 }

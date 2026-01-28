@@ -27,9 +27,11 @@ public class ActivityController {
 
     public boolean memberIsAlreadyInscribed(Member memberToSearch){
         boolean isAlreadyInscribed = false;
-        for (int i = 0; i < this.actualActivity.getMembersInscribed().length; i++) {
-            if(this.actualActivity.getMembersInscribed()[i] != null && this.actualActivity.getMembersInscribed()[i].equals(memberToSearch)){
-                isAlreadyInscribed = true;
+        if(this.actualActivity != null) {
+            for (int i = 0; i < this.actualActivity.getMembersInscribed().length; i++) {
+                if (this.actualActivity.getMembersInscribed()[i] != null && this.actualActivity.getMembersInscribed()[i].equals(memberToSearch)) {
+                    isAlreadyInscribed = true;
+                }
             }
         }
         return isAlreadyInscribed;
@@ -37,10 +39,10 @@ public class ActivityController {
 
     public boolean subscribeMemberToActivity (Member memberToSubscribe) throws Exception {
         boolean subscribedSuccessful = false;
-        if( !this.memberIsAlreadyInscribed(memberToSubscribe) ){
+        if( !this.memberIsAlreadyInscribed(memberToSubscribe) && this.actualActivity != null){
             if(Utils.countArrayFilled(this.actualActivity.getMembersInscribed()) == this.actualActivity.getMembersInscribed().length){
                 throw new Exception("Error, no puede inscribirse el socio, la actividad está completa.");
-            }else{
+            }else if (this.actualActivity != null){
                 for (int i = 0; i < this.actualActivity.getMembersInscribed().length && !subscribedSuccessful; i++) {
                     if (this.actualActivity.getMembersInscribed()[i] == null){
                         this.actualActivity.getMembersInscribed()[i] = memberToSubscribe;

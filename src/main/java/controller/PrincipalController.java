@@ -3,23 +3,30 @@ package controller;
 import model.Activity;
 import model.Member;
 import model.SportCenter;
+import utils.Utils;
 import view.ConsoleView;
 
 public class PrincipalController {
-    private static ActivityController actController;
-    private static MemberController memController;
-    private static SportCenterController centerController;
+    private final ActivityController actController;
+    private final MemberController memController;
+    private final SportCenterController centerController;
+    private final SportCenter actualSportCenter;
 
-    private SportCenter actualSportCenter;
+    public PrincipalController(int SIZE_ACTIVITY_ARRAY, int SIZE_MEMBER_ARRAY) {
+        this.actController = new ActivityController();
+        this.memController = new MemberController();
+        this.actualSportCenter = startApp(SIZE_ACTIVITY_ARRAY, SIZE_MEMBER_ARRAY);
+        this.centerController = new SportCenterController(actualSportCenter);
+    }
 
-    public SportCenter startApp (int SIZE_ACTIVITY_ARRAY, int SIZE_MEMBER_ARRAY){
+    private SportCenter startApp(int SIZE_ACTIVITY_ARRAY, int SIZE_MEMBER_ARRAY) {
         Activity[] activities = new Activity[SIZE_ACTIVITY_ARRAY];
         Member[] members = new Member[SIZE_MEMBER_ARRAY];
-        Member member1 = new Member("31025482T", "Ángel", 28, activities);
-        Member member2 = new Member("53694581P", "Pepe", 20, activities);
-        Member member3 = new Member("12345678Z", "María", 45, activities);
-        Member[] membersInscribedOnActivity1 = new Member[SIZE_MEMBER_ARRAY];
-        Member[] membersInscribedOnActivity2 = new Member[SIZE_MEMBER_ARRAY];
+        Member member1 = new Member("31025482T", "Ángel", 28, SIZE_ACTIVITY_ARRAY);
+        Member member2 = new Member("53694581P", "Pepe", 20, SIZE_ACTIVITY_ARRAY);
+        Member member3 = new Member("12345678Z", "María", 45, SIZE_ACTIVITY_ARRAY);
+        Member[] membersInscribedOnActivity1 = {member1, member2, member3, null, null, null, null, null, null, null};
+        Member[] membersInscribedOnActivity2 = {member1, member2, member3, null, null, null, null, null, null, null};
         Activity activity1 = new Activity("Pilates", 30, "Iniciación", 20.5, membersInscribedOnActivity1);
         Activity activity2 = new Activity("Natación", 60, "Intermedio", 42.3, membersInscribedOnActivity1);
         Activity activity3 = new Activity("Karate", 30, "Avanzado", 66.6, membersInscribedOnActivity2);
@@ -31,75 +38,53 @@ public class PrincipalController {
         registerMemberOnStart(member1, members);
         registerMemberOnStart(member2, members);
         registerMemberOnStart(member3, members);
-        try {
-            registerActivityWithMember(activity1, member1);
-            registerActivityWithMember(activity1, member2);
-            registerActivityWithMember(activity1, member3);
-            registerActivityWithMember(activity2, member1);
-            registerActivityWithMember(activity2, member2);
-            registerActivityWithMember(activity3, member3);
-            registerActivityWithMember(activity4, member3);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
         String nameSportCenter = ConsoleView.askNameSportCenter();
         return new SportCenter(nameSportCenter, members, activities);
     }
 
-    private void showPrincipalMenu (int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) {
+    public void showPrincipalMenu(int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) {
         boolean stayOnMenu = true;
-        do{
+        do {
             int option = ConsoleView.showPrincipalMenuAndReadOption(actualSportCenter, 0, 4);
-            switch (option){
-                case 0:
-                    stayOnMenu = false;
-                    ConsoleView.showMessage("Ha seleccionado salir del programa, gracias por su tiempo.");
-                    break;
-                case 1:
-                    try {
+            try {
+                switch (option) {
+                    case 0:
+                        stayOnMenu = false;
+                        ConsoleView.showMessage("Ha seleccionado salir del programa, gracias por su tiempo.");
+                        break;
+                    case 1:
                         memberMenu();
-                    } catch (Exception e) {
-                        ConsoleView.showMessage(e.getMessage());
-                    }
-                    break;
-                case 2:
-                    try {
+                        break;
+                    case 2:
                         activityMenu();
-                    } catch (Exception e) {
-                        ConsoleView.showMessage(e.getMessage());
-                    }
-                    break;
-                case 3:
-                    try {
+                        break;
+                    case 3:
                         inscriptionsMenu();
-                    } catch (Exception e) {
-                        ConsoleView.showMessage(e.getMessage());
-                    }
-                    break;
-                case 4:
-                    try {
+                        break;
+                    case 4:
                         feeMenu();
-                    } catch (Exception e) {
-                        ConsoleView.showMessage(e.getMessage());
-                    }
-                    break;
-                default:
-                    System.out.println("Debe introducir un número entre 0 y 4.");
+                        break;
+                    default:
+                        ConsoleView.showError("debe introducir un número entre 0 y 4.");
+
+                }
+            } catch (Exception e) {
+                ConsoleView.showMessage(e.getMessage());
             }
-        }while(stayOnMenu);
+        } while (stayOnMenu);
     }
 
-    public void memberMenu () throws Exception {
-        boolean stayOnMenu  = true;
-        do{
+    private void memberMenu() throws Exception {
+        boolean stayOnMenu = true;
+        do {
             int option = ConsoleView.showMemberMenuAndReadOption(0, 4);
-            switch (option){
+            switch (option) {
                 case 0:
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
-                    ConsoleView.showMessage(actualSportCenter.getMembers().toString());
+                    ConsoleView.showMessage(centerController.listMembers());
                     break;
                 case 2:
                     ConsoleView.showMessage(centerController.searchMemberById().toString());
@@ -107,14 +92,14 @@ public class PrincipalController {
                 case 3:
 
             }
-        }while(stayOnMenu);
+        } while (stayOnMenu);
     }
 
-    public void activityMenu() throws Exception {
-        boolean stayOnMenu  = true;
-        do{
+    private void activityMenu() throws Exception {
+        boolean stayOnMenu = true;
+        do {
             int option = ConsoleView.showActivityMenuAndReadOption(0, 4);
-            switch (option){
+            switch (option) {
                 case 0:
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de socios al menú principal.");
@@ -129,80 +114,89 @@ public class PrincipalController {
                     ConsoleView.showMessage(centerController.searchActivityById().toString());
                     break;
                 case 4:
-                    if(centerController.removeActivity()){
-                        System.out.println("Actividad eliminada satisfactoriamente.");
-                    }else{
-                        System.out.println("No se ha podido eliminar la actividad.");
+                    if (centerController.removeActivity()) {
+                        ConsoleView.showMessage("Actividad eliminada satisfactoriamente.");
                     }
                     break;
             }
-        }while(stayOnMenu);
+        } while (stayOnMenu);
     }
 
-    public void inscriptionsMenu(SportCenter sportCenter, int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) throws Exception {
-        boolean stayOnMenu  = true;
-        do{
+    private void inscriptionsMenu() throws Exception {
+        boolean stayOnMenu = true;
+        do {
             int option = ConsoleView.showInscriptionsMenuAndReadOption(0, 4);
-            switch (option){
+            switch (option) {
                 case 0:
                     stayOnMenu = false;
-                    System.out.println("Ha seleccionado salir del menú de inscripciones al menú principal.");
+                    ConsoleView.showMessage("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
-                    if ( centerController.registerNewMember() ){
-                        System.out.println("Socio registrado correctamente.");
+                    if (registerNewMember()) {
+                        ConsoleView.showMessage("Socio registrado correctamente.");
                     }
                     break;
                 case 2:
-                    if ( centerController.registerActivity(sportCenter, SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) ){
-                        System.out.println("Actividad registrada correctamente.");
+                    int registeredActivity = registerActivity();
+                    Activity activityCreated = this.actualSportCenter.getActivities()[registeredActivity];
+                    if (registeredActivity != -1) {
+                        ConsoleView.showMessage("Actividad " + activityCreated.getName() + " con ID: " + activityCreated.getActivityId() + " registrada correctamente.");
+                    }else{
+                        ConsoleView.showError("No existe la actividad con este ID.");
                     }
                     break;
                 case 3:
-                    if ( MemberController.(sportCenter) ){
-                    System.out.println("Socio registrado en actividad correctamente.");
-                }
-                break;
+                    if (centerController.subscribeMemberOnFoundActivity()) {
+                        ConsoleView.showMessage("Socio suscrito a actividad correctamente.");
+                    }
+                    break;
                 case 4:
-                    if ( memController.unsubscribeActivity() ){
-                        System.out.println("Socio registrado en actividad correctamente.");
+                    int memberId = ConsoleView.askIdSearchMember();
+                    memController.updateActualMember(centerController.findMemberById(memberId));
+                    if (memController.unsubscribeActivity()) {
+                        ConsoleView.showMessage("Actividad seleccionada eliminada de la lista del socio correctamente.");
                     }
                     break;
                 default:
-                    System.out.println("Error, debe introducir un valor entre 0 y 4.");
+                    ConsoleView.showError("debe introducir un valor entre 0 y 4.");
             }
-        }while(stayOnMenu);
+        } while (stayOnMenu);
     }
 
-    public static void feeMenu(SportCenter sportCenter) throws Exception {
-        boolean stayOnMenu  = true;
-        do{
+    private void feeMenu() throws Exception {
+        boolean stayOnMenu = true;
+        int memberId = ConsoleView.askIdSearchMember();
+        memController.updateActualMember(centerController.findMemberById(memberId));
+        do {
             int option = ConsoleView.showFeeMenuAndReadOption(0, 4);
-            switch (option){
+            switch (option) {
                 case 0:
                     stayOnMenu = false;
-                    System.out.println("Ha seleccionado salir del menú de inscripciones al menú principal.");
+                    ConsoleView.showMessage("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
-                    System.out.println("La cuota mensual es: " + memController.calculateMonthlyFeeMember(sportCenter) );
+                    ConsoleView.showMessage("La cuota mensual es: " + memController.actualFee());
                     break;
                 case 2:
-                    memController.markFeePayed(sportCenter);
+                    if (memController.markPayedMonth()) {
+                        ConsoleView.showMessage("El mes ha sido marcado como pagado de forma satisfactoria.");
+                    } else {
+                        ConsoleView.showError("el mes está marcado como no pagado.");
+                    }
                     break;
                 case 3:
-                    System.out.println("El importe restante es: " + MemberController.totalLeftFeeYear(sportCenter, askMonth()) );
+                    ConsoleView.showMessage("El importe restante es: " + memController.yearLeftFee());
                     break;
                 case 4:
-                    System.out.println("La cuota del mes es: " + MemberController.feeExactMonth(sportCenter) );
+                    ConsoleView.showMessage("La cuota del mes es: " + memController.feeOfExactMonth());
                     break;
                 default:
-                    System.out.println("Error, debe introducir un valor entre 0 y 4.");
+                    ConsoleView.showError("debe introducir un valor entre 0 y 4.");
             }
-        }while(stayOnMenu);
+        } while (stayOnMenu);
     }
-}
 
-    private boolean registerActivityOnStart (Activity activityToPutOnArray, Activity[] activities) {
+    private void registerActivityOnStart(Activity activityToPutOnArray, Activity[] activities) {
         boolean registerSuccessful = false;
         for (int i = 0; i < activities.length && !registerSuccessful; i++) {
             if (activities[i] == null) {
@@ -210,10 +204,9 @@ public class PrincipalController {
                 registerSuccessful = true;
             }
         }
-        return registerSuccessful;
     }
 
-    private boolean registerMemberOnStart (Member memberToPutOnArray, Member[] members) {
+    private void registerMemberOnStart(Member memberToPutOnArray, Member[] members) {
         boolean registerSuccessful = false;
         for (int i = 0; i < members.length && !registerSuccessful; i++) {
             if (members[i] == null) {
@@ -221,14 +214,50 @@ public class PrincipalController {
                 registerSuccessful = true;
             }
         }
+    }
+
+    private void registerActivityWithMember(Activity activityToAdd, Member memberToRegister) throws Exception {
+        this.actController.subscribeMemberToActivity(memberToRegister);
+    }
+
+    private boolean registerNewMember() throws Exception {
+        boolean registerSuccessful = false;
+        if (centerController.existsMemberWithDni()) {
+            throw new Exception("Error, el DNI seleccionado ya está registrado.");
+        } else {
+            for (int i = 0; i < actualSportCenter.getMembers().length && !registerSuccessful; i++) {
+                if (actualSportCenter.getMembers()[i] == null) {
+                    String dni = ConsoleView.askDniMember();
+                    String name = ConsoleView.askNameMember();
+                    int age = ConsoleView.askAge();
+                    int sizeMembersInscribed = Utils.readIntInRange(1, 40, "Introduce número máximo actividades para inscribirse: ", "Error, debe introducir un número entre 1 y 40.");
+                    actualSportCenter.getMembers()[i] = memController.memberCreated(dni, name, age, sizeMembersInscribed);
+                    registerSuccessful = true;
+                }
+            }
+        }
         return registerSuccessful;
     }
 
-    public boolean registerActivityWithMember (Activity activityToAdd, Member memberToRegister) throws Exception {
+    private int registerActivity() throws Exception {
         boolean activityRegisteredSuccessfully = false;
-
-        this.actController.subscribeMemberToActivity(memberToRegister);
-        activityRegisteredSuccessfully = true;
-        return activityRegisteredSuccessfully;
+        int positionRegisteredActivity = -1;
+        if (Utils.countArrayFilled(actualSportCenter.getActivities()) == actualSportCenter.getActivities().length) {
+            throw new Exception("Error, no se ha podido registrar la actividad, está completo el registro.");
+        } else {
+            for (int i = 0; i < actualSportCenter.getActivities().length && !activityRegisteredSuccessfully; i++) {
+                if (actualSportCenter.getActivities()[i] == null) {
+                    String activityName = ConsoleView.askStringUser("Introduce nombre de la actividad: ");
+                    int minuteDuration = Utils.readIntInRange(1, 300, "Introduce minutos de duración de la actividad: ", "Error, ha introducido un valor inválido debe estar entre 1 y 300.");
+                    String level = ConsoleView.askLevelIntensityActivity();
+                    double monthlyPrice = Utils.readIntInRange(1, 40, "Introduce precio mensual de la actividad: ", "Error, debe introducido un valor entre 1 y 40.");
+                    int sizeMembers = Utils.readIntInRange(1, 40, "Introduce número de miembros de la actividad: ", "Error, debe introducir un número entre 1 y 40.");
+                    actualSportCenter.getActivities()[i] = actController.activityCreated(activityName, minuteDuration, level, monthlyPrice, sizeMembers);
+                    positionRegisteredActivity = i;
+                    activityRegisteredSuccessfully = true;
+                }
+            }
+        }
+        return positionRegisteredActivity;
     }
 }
