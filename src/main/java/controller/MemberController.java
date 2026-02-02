@@ -7,9 +7,13 @@ import view.ConsoleView;
 public class MemberController {
     private Member actualMember;
 
+    public MemberController(){
+        actualMember = new Member();
+    }
+
     public void updateActualMember(Member member){
-        if(member != null) {
-            member = this.actualMember;
+        if(member != null && member.getMemberId() != -1) {
+            actualMember = member;
         }
     }
 
@@ -66,6 +70,7 @@ public class MemberController {
 
     public void recalculateMonthlyFees(int actualMonth){
         double totalMonth = 0.0;
+        actualMonth--;
         for (int i = actualMonth; i < this.actualMember.getMonthlyFees().length; i++) {
             for (Activity activity : this.actualMember.getActivitiesInscribed()) {
                 if(activity != null) {
@@ -100,18 +105,21 @@ public class MemberController {
         // reducimos ese número una vez para que corresponda con el array.
         int monthToSearch = ConsoleView.askMonth();
         monthToSearch--;
-        if (monthToSearch < 1 || monthToSearch > 12){
+        if (monthToSearch < 0 || monthToSearch > 11){
             throw new Exception("Error, mes introducido inválido, debe introducir un número entre 1 y 12.");
         } else{
-            exactFee = this.actualMember.getMonthlyFees()[monthToSearch];
+            for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
+                if(this.actualMember.getActivitiesInscribed()[i] != null) {
+                    exactFee += this.actualMember.getActivitiesInscribed()[i].getMonthlyPrice();
+                }
+            }
         }
         return exactFee;
     }
 
     public double yearLeftFee (){
-        int monthToSearch = ConsoleView.askMonth();
-        monthToSearch--;
         double yearLeftTotal = 0.0;
+        int monthToSearch = ConsoleView.askMonth();
         recalculateMonthlyFees(monthToSearch);
         for (int i = monthToSearch; i < this.actualMember.getMonthlyFees().length; i++) {
             yearLeftTotal += this.actualMember.getMonthlyFees()[i];

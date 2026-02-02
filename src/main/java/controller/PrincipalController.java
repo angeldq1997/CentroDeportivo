@@ -25,19 +25,40 @@ public class PrincipalController {
         Member member1 = new Member("31025482T", "Ángel", 28, SIZE_ACTIVITY_ARRAY);
         Member member2 = new Member("53694581P", "Pepe", 20, SIZE_ACTIVITY_ARRAY);
         Member member3 = new Member("12345678Z", "María", 45, SIZE_ACTIVITY_ARRAY);
-        Member[] membersInscribedOnActivity1 = {member1, member2, member3, null, null, null, null, null, null, null};
-        Member[] membersInscribedOnActivity2 = {member1, member2, member3, null, null, null, null, null, null, null};
+        Member member4 = new Member("67592924J", "Josefina", 66, SIZE_ACTIVITY_ARRAY);
+        Member member5 = new Member("018492522Z", "Paco", 52, SIZE_ACTIVITY_ARRAY);
+        Member[] membersInscribedOnActivity1 = {null, member2, member3, member4, member5, null, null, null, null, null};
+        Member[] membersInscribedOnActivity2 = {member1, null, member3, member4, member5, null, null, null, null, null};
+        Member[] membersInscribedOnActivity3 = {member1, member2, null, member4, member5, null, null, null, null, null};
+        Member[] membersInscribedOnActivity4 = {member1, member2, member3, null, member5, null, null, null, null, null};
+        Member[] membersInscribedOnActivity5 = {member1, member2, member3, member4, null, null, null, null, null, null};
         Activity activity1 = new Activity("Pilates", 30, "Iniciación", 20.5, membersInscribedOnActivity1);
-        Activity activity2 = new Activity("Natación", 60, "Intermedio", 42.3, membersInscribedOnActivity1);
-        Activity activity3 = new Activity("Karate", 30, "Avanzado", 66.6, membersInscribedOnActivity2);
-        Activity activity4 = new Activity("Pilates", 30, "Iniciación", 15.0, membersInscribedOnActivity2);
+        Activity activity2 = new Activity("Natación", 60, "Intermedio", 42.3, membersInscribedOnActivity2);
+        Activity activity3 = new Activity("Karate", 30, "Avanzado", 66.6, membersInscribedOnActivity3);
+        Activity activity4 = new Activity("Yoga", 30, "Iniciación", 15.0, membersInscribedOnActivity4);
+        Activity activity5 = new Activity("Boxeo", 30, "Avanzado", 45.0, membersInscribedOnActivity5);
+        Activity[] groupActivities1 = {activity1, activity2, activity3, activity4, activity5, null, null, null, null, null};
+        Activity[] groupActivities2 = {activity1, null, activity3, activity4, activity5, null, null, null, null, null};
+        Activity[] groupActivities3 = {activity1, activity2, null, activity4, activity5, null, null, null, null, null};
+        Activity[] groupActivities4 = {activity1, activity2, activity3, null, activity5, null, null, null, null, null};
+        Activity[] groupActivities5 = {activity1, activity2, activity3, activity4, null, null, null, null, null, null};
+
+        member1.setActivitiesInscribed(groupActivities1);
+        member2.setActivitiesInscribed(groupActivities2);
+        member3.setActivitiesInscribed(groupActivities3);
+        member4.setActivitiesInscribed(groupActivities4);
+        member5.setActivitiesInscribed(groupActivities5);
+
         registerActivityOnStart(activity1, activities);
         registerActivityOnStart(activity2, activities);
         registerActivityOnStart(activity3, activities);
         registerActivityOnStart(activity4, activities);
+        registerActivityOnStart(activity5, activities);
         registerMemberOnStart(member1, members);
         registerMemberOnStart(member2, members);
         registerMemberOnStart(member3, members);
+        registerMemberOnStart(member4, members);
+        registerMemberOnStart(member5, members);
         String nameSportCenter = ConsoleView.askNameSportCenter();
         return new SportCenter(nameSportCenter, members, activities);
     }

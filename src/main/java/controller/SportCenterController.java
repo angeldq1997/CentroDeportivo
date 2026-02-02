@@ -141,6 +141,7 @@ public class SportCenterController {
             if(actualSportCenter.getMembers()[i] != null && (actualSportCenter.getMembers()[i].getMemberId() == memberId) ){
                 memberFound = actualSportCenter.getMembers()[i];
                 isMemberFound = true;
+                ConsoleView.showMessage("El socio seleccionado es: " + memberFound.getName() + " con DNI " + memberFound.getDni());
             }
         }
         if (memberFound == null){

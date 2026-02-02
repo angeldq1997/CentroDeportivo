@@ -73,6 +73,10 @@ public class Member {
         return this.activitiesInscribed;
     }
 
+    public void setActivitiesInscribed (Activity[] activities){
+        this.activitiesInscribed = activities;
+    }
+
     public boolean[] getPayedFees() {
         return payedFees;
     }
