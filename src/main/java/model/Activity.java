@@ -85,6 +85,10 @@ public class Activity {
         return membersInscribed;
     }
 
+    /**
+     * Función que recoge los socios no nulos inscritos en una actividad concreta.
+     * @return Array de socios que solo contiene los que no son nulos inscritos en una actividad.
+     */
     public Member[] getNotNullMembersInscribed() {
         Member[] onlyNotNullMembers = new Member[Utils.countArrayFilled(this.membersInscribed)];
         int counter = 0;
@@ -101,6 +105,10 @@ public class Activity {
         this.membersInscribed = membersInscribed;
     }
 
+    /**
+     * Función que recoge una cadena de texto con la lista de socios inscritos en una actividad.
+     * @return Devuelve la cadena de texto con el nombre, DNI de los socios inscritos, si no hubiera lo comenta.
+     */
     private String listMembersInscribed(){
         boolean nobodyListed = true;
         String listMembers = "";

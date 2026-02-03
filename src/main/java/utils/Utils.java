@@ -8,6 +8,11 @@ import java.util.Scanner;
 public class Utils {
     private static final Scanner keyboard = new Scanner(System.in);
 
+    /**
+     * Función que cuenta los huecos rellenos de un array excluyendo los nulos.
+     * @param objects Recibe un array de objetos de cualquier clase con el que se va a trabajar.
+     * @return El número entero de la suma de los huecos que están rellenos en el array.
+     */
     public static int countArrayFilled(Object[] objects){
         int total = 0;
         if(objects != null){
@@ -22,6 +27,12 @@ public class Utils {
         return total;
     }
 
+    /**
+     * ---NO USADO---
+     * Función para pedir un mensaje y comprobar que no este vacío
+     * @param message Cadena de texto con el mensaje para pedir por pantalla de forma más específica.
+     * @return Devuelve la cadena de texto verificada.
+     */
     public static String readTextNotEmpty(String message){
         boolean readTextValid = false;
         String text = "";
@@ -38,6 +49,11 @@ public class Utils {
         return text;
     }
 
+    /**
+     * Función que verifica la cadena de texto con el DNI debe tener 8 dígitos y una letra.
+     * @param dni DNI a comprobar.
+     * @return Devuelve True si es válido y False si no lo es.
+     */
     public static boolean verifyDni(String dni){
         boolean validDni = false;
         if(dni != null || !dni.isEmpty()){

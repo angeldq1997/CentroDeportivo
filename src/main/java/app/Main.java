@@ -11,6 +11,6 @@ public class Main {
         //Inicio controlador principal
         PrincipalController prinController = new PrincipalController(SIZE_ACTIVITY_ARRAY, SIZE_MEMBER_ARRAY);
         //Entramos en el menú del programa
-        prinController.showPrincipalMenu(SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY);
+        prinController.showPrincipalMenu();
     }
 }

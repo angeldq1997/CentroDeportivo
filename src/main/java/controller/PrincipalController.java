@@ -19,6 +19,12 @@ public class PrincipalController {
         this.centerController = new SportCenterController(actualSportCenter);
     }
 
+    /**
+     * Función que se ejecuta al comenzar el programa, ya que no tenemos todavía persistencia de datos inicia actividades, socios y crea un Centro Deportivo.
+     * @param SIZE_ACTIVITY_ARRAY Entero que fija el tamaño del array de actividades en el que los socios puedes estar inscritos y el de actividades del Centro Deportivo.
+     * @param SIZE_MEMBER_ARRAY Entero en el que se fija el tamaño del array de socios del Centro Deportivo.
+     * @return Devuelve el Centro Deportivo ya con nombre, array de socios y de actividades.
+     */
     private SportCenter startApp(int SIZE_ACTIVITY_ARRAY, int SIZE_MEMBER_ARRAY) {
         Activity[] activities = new Activity[SIZE_ACTIVITY_ARRAY];
         Member[] members = new Member[SIZE_MEMBER_ARRAY];
@@ -63,7 +69,10 @@ public class PrincipalController {
         return new SportCenter(nameSportCenter, members, activities);
     }
 
-    public void showPrincipalMenu(int SIZE_MEMBERS_INSCRIBED_ON_ACTIVITY) {
+    /**
+     * Función que muestra el menú principal y contiene las opciones en las que se divide.
+     */
+    public void showPrincipalMenu() {
         boolean stayOnMenu = true;
         do {
             int option = ConsoleView.showPrincipalMenuAndReadOption(actualSportCenter, 0, 4);
@@ -74,15 +83,19 @@ public class PrincipalController {
                         ConsoleView.showMessage("Ha seleccionado salir del programa, gracias por su tiempo.");
                         break;
                     case 1:
+                        //SUBMENÚ DE SOCIOS
                         memberMenu();
                         break;
                     case 2:
+                        //SUBMENÚ DE ACTIVIDADES
                         activityMenu();
                         break;
                     case 3:
+                        //SUBMENÚ DE INSCRIPCIONES
                         inscriptionsMenu();
                         break;
                     case 4:
+                        //SUBMENÚ DE CUOTAS
                         feeMenu();
                         break;
                     default:
@@ -95,19 +108,26 @@ public class PrincipalController {
         } while (stayOnMenu);
     }
 
+    /**
+     * Función que muestra el submenú de socios, contiene las opciones posibles en las que se divide y llama a los métodos correspondientes para la acción elegida.
+     * @throws Exception Lanza excepción cuando no hay socios en el centro deportivo o cuando el socio a buscar con un ID concreto no se encuentra.
+     */
     private void memberMenu() throws Exception {
         boolean stayOnMenu = true;
         do {
             int option = ConsoleView.showMemberMenuAndReadOption(0, 4);
             switch (option) {
                 case 0:
+                    //SALIR DEL SUBMENÚ SOCIOS
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
+                    //Lista de socios del centro deportivo
                     ConsoleView.showMessage(centerController.listMembers());
                     break;
                 case 2:
+                    //Muestra en pantalla un socio seleccionado
                     ConsoleView.showMessage(centerController.searchMemberById().toString());
                     break;
                 case 3:
@@ -116,25 +136,34 @@ public class PrincipalController {
         } while (stayOnMenu);
     }
 
+    /**
+     * Función que muestra el submenú de actividades, contiene las opciones posibles en las que se divide y llama a los métodos correspondientes para la acción elegida.
+     * @throws Exception Lanza excepción cuando no se halla el ID de una actividad concreta / o de un socio/a, también cuando el ID introducido para borrar una actividad no aparece en el array de estas.
+     */
     private void activityMenu() throws Exception {
         boolean stayOnMenu = true;
         do {
             int option = ConsoleView.showActivityMenuAndReadOption(0, 4);
             switch (option) {
                 case 0:
+                    //SALIR DEL SUBMENÚ ACTIVIDADES
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
+                    //Listado de actividades del centro deportivo
                     ConsoleView.showMessage(centerController.listActivities());
                     break;
                 case 2:
+                    //Listado de socios de una actividad concreta
                     ConsoleView.showMessage(centerController.listMembersOfActivity());
                     break;
                 case 3:
+                    //Muestra en pantalla detalles de una actividad concreta
                     ConsoleView.showMessage(centerController.searchActivityById().toString());
                     break;
                 case 4:
+                    //Elimina una actividad
                     if (centerController.removeActivity()) {
                         ConsoleView.showMessage("Actividad eliminada satisfactoriamente.");
                     }
@@ -143,21 +172,28 @@ public class PrincipalController {
         } while (stayOnMenu);
     }
 
+    /**
+     * Función que muestra el submenú de inscripciones, contiene las opciones posibles en las que se divide y llama a los métodos correspondientes para la acción elegida.
+     * @throws Exception Lanza excepción si no se ha podido anular la suscripción de una actividad o socio de esta, también cuando falla al suscribir a un socio/a.
+     */
     private void inscriptionsMenu() throws Exception {
         boolean stayOnMenu = true;
         do {
             int option = ConsoleView.showInscriptionsMenuAndReadOption(0, 4);
             switch (option) {
                 case 0:
+                    //SALIR DEL SUBMENÚ DE INSCRIPCIONES
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
+                    //REGISTRAR UN SOCIO NUEVO
                     if (registerNewMember()) {
                         ConsoleView.showMessage("Socio registrado correctamente.");
                     }
                     break;
                 case 2:
+                    //REGISTRAR UNA ACTIVIDAD NUEVA
                     int registeredActivity = registerActivity();
                     Activity activityCreated = this.actualSportCenter.getActivities()[registeredActivity];
                     if (registeredActivity != -1) {
@@ -167,23 +203,27 @@ public class PrincipalController {
                     }
                     break;
                 case 3:
+                    //REGISTRAR UN SOCIO EN ACTIVIDAD CONCRETA
                     if (centerController.subscribeMemberOnFoundActivity()) {
                         ConsoleView.showMessage("Socio suscrito a actividad correctamente.");
                     }
                     break;
                 case 4:
-                    int memberId = ConsoleView.askIdSearchMember();
-                    memController.updateActualMember(centerController.findMemberById(memberId));
-                    if (memController.unsubscribeActivity()) {
-                        ConsoleView.showMessage("Actividad seleccionada eliminada de la lista del socio correctamente.");
+                    //ANULAR SUSCRIPCIÓN DEL SOCIO A LA ACTIVIDAD Y VICEVERSA
+                    if( unsubscribeMemberFromActivityAndReverse() ){
+                        ConsoleView.showMessage("Se ha realizado correctamente la petición de anulación de suscripción.");
                     }
                     break;
                 default:
-                    ConsoleView.showError("debe introducir un valor entre 0 y 4.");
+                    ConsoleView.showError ( "debe introducir un valor entre 0 y 4.");
             }
         } while (stayOnMenu);
     }
 
+    /**
+     * Función que muestra el submenú de cuotas, contiene las opciones posibles en las que se divide y llama a los métodos correspondientes para la acción elegida.
+     * @throws Exception Lanza excepción cuando no es posible actualizar el pago una cuota debido a que ya se pagó.
+     */
     private void feeMenu() throws Exception {
         boolean stayOnMenu = true;
         int memberId = ConsoleView.askIdSearchMember();
@@ -192,13 +232,16 @@ public class PrincipalController {
             int option = ConsoleView.showFeeMenuAndReadOption(0, 4);
             switch (option) {
                 case 0:
+                    //SALIR DEL SUBMENÚ DE CUOTAS
                     stayOnMenu = false;
                     ConsoleView.showMessage("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
+                    //MUESTRA EN PANTALLA LA CUOTA ACTUAL
                     ConsoleView.showMessage("La cuota mensual es: " + memController.actualFee());
                     break;
                 case 2:
+                    //MARCA COMO PAGADA UNA CUOTA CONCRETA
                     if (memController.markPayedMonth()) {
                         ConsoleView.showMessage("El mes ha sido marcado como pagado de forma satisfactoria.");
                     } else {
@@ -206,9 +249,11 @@ public class PrincipalController {
                     }
                     break;
                 case 3:
+                    //MUESTRA POR PANTALLA EL IMPORTE PENDIENTE DEL AÑO
                     ConsoleView.showMessage("El importe restante es: " + memController.yearLeftFee());
                     break;
                 case 4:
+                    //MUESTRA POR PANTALLA LA CUOTA DE UN MES CONCRETO
                     ConsoleView.showMessage("La cuota del mes es: " + memController.feeOfExactMonth());
                     break;
                 default:
@@ -217,6 +262,11 @@ public class PrincipalController {
         } while (stayOnMenu);
     }
 
+    /**
+     * Función que registra una actividad ya creada al comienzo de la ejecución de la app por la falta de persistencia de datos.
+     * @param activityToPutOnArray Actividad a colocar en el array de actividades.
+     * @param activities Array de actividades por el cual se trabaja.
+     */
     private void registerActivityOnStart(Activity activityToPutOnArray, Activity[] activities) {
         boolean registerSuccessful = false;
         for (int i = 0; i < activities.length && !registerSuccessful; i++) {
@@ -227,6 +277,11 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Función que registra un socio/a ya creado/a al comienzo de la ejecución de la app por la falta de persistencia de datos.
+     * @param memberToPutOnArray Socio a colocar en el array de socios.
+     * @param members Array de socios que contiene el centro deportivo, en este se registra el socio concreto.
+     */
     private void registerMemberOnStart(Member memberToPutOnArray, Member[] members) {
         boolean registerSuccessful = false;
         for (int i = 0; i < members.length && !registerSuccessful; i++) {
@@ -237,10 +292,46 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Función que anula el registro de un socio en una actividad y viceversa.
+     * @return Devuelve True si ambos funcionan y False si cualquiera de ellos fallase.
+     * @throws Exception Lanza excepción si no se encuentra el socio/ la actividad o se introducen ID no válidas.
+     */
+    public boolean unsubscribeMemberFromActivityAndReverse() throws Exception {
+        boolean perfectUnsubscription = true;
+        int memberId = ConsoleView.askIdSearchMember();
+        memController.updateActualMember(centerController.findMemberById(memberId));
+        if (memController.unsubscribeActivityOnMember()) {
+            ConsoleView.showMessage("Se ha eliminado el registro de la actividad en el socio.");
+        } else {
+            ConsoleView.showError("no se ha podido anular la suscripción de la actividad al socio/a.");
+            perfectUnsubscription = false;
+        }
+        if (actController.unsubscribeMemberToActivity   ( memController.getActualMember(), centerController.findActivityById(ConsoleView.askIdSearchActivity())) ) {
+            ConsoleView.showMessage("Se ha eliminado el registro del socio en la actividad.");
+        } else {
+            ConsoleView.showError("no se ha podido anular el socio de la actividad.");
+            perfectUnsubscription = false;
+        }
+        return perfectUnsubscription;
+    }
+
+    /**
+     * ---NO SE HA USADO PORQUE YA SE AÑADIÓ LA OPCIÓN DENTRO DE LA FUNCIÓN PARA REGISTRAR UN SOCIO A UNA ACTIVIDAD---
+     * Función que registra una actividad con un socio/a en concreto.
+     * @param activityToAdd Actividad para inscribir el socio en ella.
+     * @param memberToRegister Socio que se registrará en la actividad.
+     * @throws Exception Lanza excepción cuando no se puede inscribir porque ya está completo o ya se halla en él.
+     */
     private void registerActivityWithMember(Activity activityToAdd, Member memberToRegister) throws Exception {
         this.actController.subscribeMemberToActivity(memberToRegister);
     }
 
+    /**
+     * Función para registrar a un socio/a nuevo/a en el centro deportivo.
+     * @return Devuelve True cuando se ha registrado exitosamente y False cuando no ha sido posible.
+     * @throws Exception Lanza excepción cuando se escribe un DNI que ya está en el sistema (no se verifica el ID porque se autoincrementa).
+     */
     private boolean registerNewMember() throws Exception {
         boolean registerSuccessful = false;
         if (centerController.existsMemberWithDni()) {
@@ -260,6 +351,11 @@ public class PrincipalController {
         return registerSuccessful;
     }
 
+    /**
+     * Función que permite registrar una actividad nueva en el centro deportivo.
+     * @return Devuelve True cuando se ha podido realizar sin problema y False cuando no es el caso.
+     * @throws Exception Lanza excepción cuando ya está el registro completo o cuando se introduce de forma incorrecta un nivel de intensidad.
+     */
     private int registerActivity() throws Exception {
         boolean activityRegisteredSuccessfully = false;
         int positionRegisteredActivity = -1;

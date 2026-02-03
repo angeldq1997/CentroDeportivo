@@ -89,6 +89,10 @@ public class Member {
         return monthlyFees;
     }
 
+    /**
+     * Función que recoge la lista de las actividades en las que está inscrito un socio.
+     * @return Devuelve la lista completa de las actividades excluyendo las nulas, si no hubiese devuelve una cadena corta comentandolo.
+     */
     private String listActivitiesInscribed(){
         String listActivities = "Actividades inscritas:\n";
         for (int i = 0; i < this.getActivitiesInscribed().length; i++) {
@@ -102,11 +106,15 @@ public class Member {
         return listActivities;
     }
 
+    /**
+     * Función que recoge la cuota de los meses del año y los agrupa.
+     * @return La lista con cada cuota mensual, si no hubiese devuelve que no hay cuotas para este año.
+     */
     private String listMonthlyFees(){
         String listMonthlyFees = "";
         for (int i = 0; i < this.getMonthlyFees().length; i++) {
             if(this.getMonthlyFees()[i] != 0.0){
-                listMonthlyFees += this.getMonthlyFees()[i] + "\n";
+                listMonthlyFees += (i+1) + " " + this.getMonthlyFees()[i] + "\n";
             }
         }
         if(listMonthlyFees.trim().isEmpty()){
@@ -115,8 +123,13 @@ public class Member {
         return listMonthlyFees;
     }
 
+    /**
+     * Función que recoge en una lista las cuotas pendientes y pagadas por orden.
+     * @return La lista de las cuotas del año si todas están pagadas lo comenta igual que si no hubiese ninguna pagada.
+     */
     private String listPayedFees(){
         boolean allPayedFees = true;
+        boolean nothingPayed = true;
         String listPayedFees = "CUOTAS DE ESTE AÑO: \n";
         for (int i = 0; i < this.getPayedFees().length; i++) {
             if(!this.getPayedFees()[i] && this.getMonthlyFees()[i] != 0.0){
@@ -124,10 +137,13 @@ public class Member {
                 allPayedFees = false;
             }else{
                 listPayedFees += "O Importe PAGADO para el mes (" + (i+1) + ")\n";
+                nothingPayed = false;
             }
         }
         if(allPayedFees){
             listPayedFees = "TODAS LOS PAGOS DEL MES ESTÁN PAGADOS ACTUALMENTE";
+        } else if (nothingPayed){
+            listPayedFees = "NINGUNA CUOTA ESTÁ PAGADA DE ESTE AÑO";
         }
         return listPayedFees;
     }
