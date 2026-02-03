@@ -115,7 +115,7 @@ public class PrincipalController {
     private void memberMenu() throws Exception {
         boolean stayOnMenu = true;
         do {
-            int option = ConsoleView.showMemberMenuAndReadOption(0, 4);
+            int option = ConsoleView.showMemberMenuAndReadOption(0, 3);
             switch (option) {
                 case 0:
                     //SALIR DEL SUBMENÚ SOCIOS
@@ -123,15 +123,19 @@ public class PrincipalController {
                     ConsoleView.showMessage("Ha seleccionado salir del menú de socios al menú principal.");
                     break;
                 case 1:
-                    //Lista de socios del centro deportivo
+                    //LISTA DE SOCIOS DEL CENTRO DEPORTIVO
                     ConsoleView.showMessage(centerController.listMembers());
                     break;
                 case 2:
-                    //Muestra en pantalla un socio seleccionado
+                    //MUESTRA EN PANTALLA UN SOCIO SELECCIONADO
                     ConsoleView.showMessage(centerController.searchMemberById().toString());
                     break;
                 case 3:
-
+                    //ACTUALIZAR DATOS DE SOCIO
+                    memController.updateActualMember(centerController.findMemberById(ConsoleView.askIdSearchMember()));
+                    break;
+                default:
+                    ConsoleView.showError("ha introducido un número de opción incorrecto.");
             }
         } while (stayOnMenu);
     }
@@ -168,6 +172,8 @@ public class PrincipalController {
                         ConsoleView.showMessage("Actividad eliminada satisfactoriamente.");
                     }
                     break;
+                default:
+                    ConsoleView.showError("ha introducido un número de opción incorrecto.");
             }
         } while (stayOnMenu);
     }

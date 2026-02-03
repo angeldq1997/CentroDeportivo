@@ -15,16 +15,15 @@ public class MemberController {
         return this.actualMember;
     }
 
-    /**
-     * Función para crear un nuevo socio/a en el sistema del centro deportivo.
-     * @param dni DNI del socio/a a crear.
-     * @param name Nombre del socio/a a crear.
-     * @param age Edad del socio/a
-     * @param activitiesInscribed Actividades en las que está inscrito el socio.
-     * @return El socio con todos los datos rellenos.
-     */
-    public Member memberCreated(String dni, String name, int age, int activitiesInscribed){
-        return new Member(dni, name, age, activitiesInscribed);
+    public void updateMemberData(Member member) throws Exception {
+        if(member != null) {
+            member.setDni(ConsoleView.askDniMember());
+            member.setName(ConsoleView.askNameMember());
+            member.setAge(ConsoleView.askAge());
+            ConsoleView.showMessage("DATOS ACTUALIZADOS DEL SOCIO: " + member.getMemberId() + ".");
+        }else{
+            throw new Exception("El socio seleccionado no se encuentra en la base de datos.");
+        }
     }
 
     /**
@@ -35,6 +34,18 @@ public class MemberController {
         if(member != null && member.getMemberId() != -1) {
             actualMember = member;
         }
+    }
+
+    /**
+     * Función para crear un nuevo socio/a en el sistema del centro deportivo.
+     * @param dni DNI del socio/a a crear.
+     * @param name Nombre del socio/a a crear.
+     * @param age Edad del socio/a
+     * @param activitiesInscribed Actividades en las que está inscrito el socio.
+     * @return El socio con todos los datos rellenos.
+     */
+    public Member memberCreated(String dni, String name, int age, int activitiesInscribed){
+        return new Member(dni, name, age, activitiesInscribed);
     }
 
     /**

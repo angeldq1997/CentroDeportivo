@@ -42,7 +42,7 @@ public final class ConsoleView {
      * @return Un entero con la opción seleccionada.
      */
     public static int showMemberMenuAndReadOption(int min, int max) {
-        System.out.println("\n----👨🏻👩🏻 MENÚ SOCIOS 👧🏻👦🏻----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de socios.\n\t2. Información de socio.");
+        System.out.println("\n----👨🏻👩🏻 MENÚ SOCIOS 👧🏻👦🏻----\n\t0. Salir al menú principal.\n\t1. Mostrar listado de socios.\n\t2. Información de socio.\n\t3. Actualizar datos del socio.");
         return Utils.readIntInRange(min, max, "Introduce opción: ", "Error, no ha introducido un número entre " + min + " y  " + max + ".");
     }
 
