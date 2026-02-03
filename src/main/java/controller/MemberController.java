@@ -20,7 +20,7 @@ public class MemberController {
             member.setDni(ConsoleView.askDniMember());
             member.setName(ConsoleView.askNameMember());
             member.setAge(ConsoleView.askAge());
-            ConsoleView.showMessage("DATOS ACTUALIZADOS DEL SOCIO: " + member.getMemberId() + ".");
+            ConsoleView.showMessage("DATOS ACTUALIZADOS DEL SOCIO CON ID: " + member.getMemberId() + ".");
         }else{
             throw new Exception("El socio seleccionado no se encuentra en la base de datos.");
         }

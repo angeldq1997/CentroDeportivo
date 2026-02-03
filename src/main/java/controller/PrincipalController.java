@@ -132,7 +132,7 @@ public class PrincipalController {
                     break;
                 case 3:
                     //ACTUALIZAR DATOS DE SOCIO
-                    memController.updateActualMember(centerController.findMemberById(ConsoleView.askIdSearchMember()));
+                    memController.updateMemberData(centerController.findMemberById(ConsoleView.askIdSearchMember()));
                     break;
                 default:
                     ConsoleView.showError("ha introducido un número de opción incorrecto.");

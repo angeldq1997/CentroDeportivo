@@ -101,7 +101,7 @@ public class Member {
         String listActivities = "Actividades inscritas:\n";
         for (int i = 0; i < this.getActivitiesInscribed().length; i++) {
             if(this.getActivitiesInscribed()[i] != null){
-                listActivities += this.getActivitiesInscribed()[i].toString() + "\n";
+                listActivities += this.getActivitiesInscribed()[i].getName() + "\n";
             }
         }
         if(listActivities.trim().equals("Actividades inscritas:")){
