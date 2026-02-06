@@ -137,10 +137,10 @@ public class Member {
         String listPayedFees = "CUOTAS DE ESTE AÑO: \n";
         for (int i = 0; i < this.getPayedFees().length; i++) {
             if(!this.getPayedFees()[i] && this.getMonthlyFees()[i] != 0.0){
-                listPayedFees += "X Importe PENDIENTE de pagar para el mes (" + (i+1) + ")\n";
+                listPayedFees += "❌ CUOTA PENDIENTE de pagar para el mes (" + (i+1) + ") con importe: " + this.getMonthlyFees()[i] + "\n";
                 allPayedFees = false;
             }else{
-                listPayedFees += "O Importe PAGADO para el mes (" + (i+1) + ")\n";
+                listPayedFees += "⭕ CUOTA PAGADA para el mes (" + (i+1) + ") con importe: " + this.getMonthlyFees()[i] + "\n";
                 nothingPayed = false;
             }
         }

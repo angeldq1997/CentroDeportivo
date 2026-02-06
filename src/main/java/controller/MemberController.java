@@ -4,6 +4,8 @@ import model.Activity;
 import model.Member;
 import view.ConsoleView;
 
+import java.util.Calendar;
+
 public class MemberController {
     private Member actualMember;
 
@@ -120,12 +122,16 @@ public class MemberController {
      * Función que calcula el total de la cuota mensual y lo devuelve.
      * @return Devuelve el total sumado de las actividades suscritas.
      */
-    public double actualFee () {
+    public double actualFee (int actualMonth) {
         double actualFee = 0.0;
+        actualMonth--;
         for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
             if(this.actualMember.getActivitiesInscribed()[i] !=null){
                 actualFee += this.actualMember.getActivitiesInscribed()[i].getMonthlyPrice();
             }
+        }
+        if(actualFee != 0.0){
+            this.actualMember.getMonthlyFees()[actualMonth] = actualFee;
         }
         return actualFee;
     }
@@ -149,8 +155,9 @@ public class MemberController {
      * @return El precio de la cuota del mes seleccionado.
      * @throws Exception Lanza excepción si el mes introducido no es válido (0 y 11).
      */
-    public double feeOfExactMonth () throws Exception {
+    public String feeOfExactMonth () throws Exception {
         double exactFee = 0.0;
+        String status = "";
         //En el array queremos buscar un mes que han introducido, para facilitar al usuario que se introduzca 1 = enero,
         // reducimos ese número una vez para que corresponda con el array.
         int monthToSearch = ConsoleView.askMonth();
@@ -158,13 +165,15 @@ public class MemberController {
         if (monthToSearch < 0 || monthToSearch > 11){
             throw new Exception("Error, mes introducido inválido, debe introducir un número entre 1 y 12.");
         } else{
-            for (int i = 0; i < this.actualMember.getActivitiesInscribed().length; i++) {
-                if(this.actualMember.getActivitiesInscribed()[i] != null) {
-                    exactFee += this.actualMember.getActivitiesInscribed()[i].getMonthlyPrice();
-                }
+            exactFee = this.actualMember.getMonthlyFees()[monthToSearch];
+            if(actualMember.getPayedFees()[monthToSearch]){
+                status = "pagada. ⭕";
+            }else{
+                status = "no pagada. ❌";
             }
         }
-        return exactFee;
+
+        return "La cuota del mes es: " + exactFee + " se encuentra " + status;
     }
 
     /**
@@ -173,7 +182,7 @@ public class MemberController {
      */
     public double yearLeftFee (){
         double yearLeftTotal = 0.0;
-        int monthToSearch = ConsoleView.askMonth();
+        int monthToSearch = Calendar.MONTH;
         for (int i = monthToSearch; i < this.actualMember.getMonthlyFees().length; i++) {
             if(!this.actualMember.getPayedFees()[i]) {
                 yearLeftTotal += this.actualMember.getMonthlyFees()[i];

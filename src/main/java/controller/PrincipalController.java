@@ -6,6 +6,8 @@ import model.SportCenter;
 import utils.Utils;
 import view.ConsoleView;
 
+import java.util.Calendar;
+
 public class PrincipalController {
     private final ActivityController actController;
     private final MemberController memController;
@@ -28,19 +30,44 @@ public class PrincipalController {
     private SportCenter startApp(int SIZE_ACTIVITY_ARRAY, int SIZE_MEMBER_ARRAY) {
         Activity[] activities = new Activity[SIZE_ACTIVITY_ARRAY];
         Member[] members = new Member[SIZE_MEMBER_ARRAY];
-        Member member1 = new Member("31025482T", "Ángel", 28, SIZE_ACTIVITY_ARRAY);
-        Member member2 = new Member("53694581P", "Pepe", 20, SIZE_ACTIVITY_ARRAY);
-        Member member3 = new Member("12345678Z", "María", 45, SIZE_ACTIVITY_ARRAY);
-        Member member4 = new Member("67592924J", "Josefina", 66, SIZE_ACTIVITY_ARRAY);
-        Member member5 = new Member("018492522Z", "Paco", 52, SIZE_ACTIVITY_ARRAY);
+
+        double january2 = 60;
+        double january = 15;
+        double february = 50;
+        double march = 119.99;
+        double april = 119.99;
+        double may = 119.99;
+        double june = 60;
+        double july = 169.99;
+        double august = 60;
+        double september = 120;
+        double october = 169.99;
+        double november = 169.99;
+        double december = 100;
+        double[] yearMember1 = {january, february, march, april, may, june, july, august, september, october, november, december};
+        double[] yearMember2 = {january2, february, march, april, may, june, july, august, september, october, november, december};
+        double[] yearMember3 = {january2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+        boolean[] payedFeesPayed = {true, true, true, true, true, true, true, true, true, true, true, true};
+        boolean[] payedFeesPending = {false, false, false, false, false, false, false, false, false, false, false, false};
+        boolean[] payedFeesAlternate = {true, false, false, false, true, false, true, false, true, false, true, false};
+        boolean[] payedFeesActual = {true, false, false, false, false, false, false, false, false, false, false, false};
+
+        Activity[] temp = null;
+
+        Member member1 = new Member("31025482T", "Ángel", 28, temp, yearMember1, payedFeesPayed);
+        Member member2 = new Member("53694581P", "Pepe", 20, temp, yearMember2, payedFeesPending);
+        Member member3 = new Member("12345678Z", "María", 45, temp, yearMember3, payedFeesActual);
+        Member member4 = new Member("67592924J", "Josefina", 66, temp, yearMember1, payedFeesPayed);
+        Member member5 = new Member("018492522Z", "Paco", 52, temp, yearMember2, payedFeesAlternate);
         Member[] membersInscribedOnActivity1 = {null, member2, member3, member4, member5, null, null, null, null, null};
         Member[] membersInscribedOnActivity2 = {member1, null, member3, member4, member5, null, null, null, null, null};
         Member[] membersInscribedOnActivity3 = {member1, member2, null, member4, member5, null, null, null, null, null};
         Member[] membersInscribedOnActivity4 = {member1, member2, member3, null, member5, null, null, null, null, null};
         Member[] membersInscribedOnActivity5 = {member1, member2, member3, member4, null, null, null, null, null, null};
-        Activity activity1 = new Activity("Pilates", 30, "Iniciación", 20.5, membersInscribedOnActivity1);
-        Activity activity2 = new Activity("Natación", 60, "Intermedio", 42.3, membersInscribedOnActivity2);
-        Activity activity3 = new Activity("Karate", 30, "Avanzado", 66.6, membersInscribedOnActivity3);
+        Activity activity1 = new Activity("Pilates", 30, "Iniciación", 25.5, membersInscribedOnActivity1);
+        Activity activity2 = new Activity("Natación", 60, "Intermedio", 50, membersInscribedOnActivity2);
+        Activity activity3 = new Activity("Karate", 30, "Avanzado", 69.99, membersInscribedOnActivity3);
         Activity activity4 = new Activity("Yoga", 30, "Iniciación", 15.0, membersInscribedOnActivity4);
         Activity activity5 = new Activity("Boxeo", 30, "Avanzado", 45.0, membersInscribedOnActivity5);
         Activity[] groupActivities1 = {activity1, activity2, activity3, activity4, activity5, null, null, null, null, null};
@@ -233,6 +260,7 @@ public class PrincipalController {
     private void feeMenu() throws Exception {
         boolean stayOnMenu = true;
         int memberId = ConsoleView.askIdSearchMember();
+        String status = "";
         memController.updateActualMember(centerController.findMemberById(memberId));
         do {
             int option = ConsoleView.showFeeMenuAndReadOption(0, 4);
@@ -243,8 +271,13 @@ public class PrincipalController {
                     ConsoleView.showMessage("Ha seleccionado salir del menú de inscripciones al menú principal.");
                     break;
                 case 1:
-                    //MUESTRA EN PANTALLA LA CUOTA ACTUAL
-                    ConsoleView.showMessage("La cuota mensual es: " + memController.actualFee());
+                    //MUESTRA EN PANTALLA LA CUOTA ACTUAL (Con Calendar . MONTH toma el mes del sistema)
+                    if(memController.getActualMember().getPayedFees()[Calendar.MONTH]){
+                        status = "pagada. ⭕";
+                    }else{
+                        status = "no pagada. ❌";
+                    }
+                    ConsoleView.showMessage("La cuota mensual es: " + memController.actualFee(Calendar.MONTH) + " se encuentra " + status);
                     break;
                 case 2:
                     //MARCA COMO PAGADA UNA CUOTA CONCRETA
@@ -260,7 +293,7 @@ public class PrincipalController {
                     break;
                 case 4:
                     //MUESTRA POR PANTALLA LA CUOTA DE UN MES CONCRETO
-                    ConsoleView.showMessage("La cuota del mes es: " + memController.feeOfExactMonth());
+                     ConsoleView.showMessage ( memController.feeOfExactMonth() );
                     break;
                 default:
                     ConsoleView.showError("debe introducir un valor entre 0 y 4.");
